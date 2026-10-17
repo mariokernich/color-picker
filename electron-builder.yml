@@ -1,0 +1,67 @@
+appId: de.kernich.colorpicker
+productName: Color Picker
+copyright: Copyright © 2026 Mario Kernich
+directories:
+  buildResources: build
+  output: dist
+files:
+  - out/**
+  - resources/**
+  - '!**/*.map'
+asarUnpack:
+  - resources/**
+
+mac:
+  category: public.app-category.graphics-design
+  minimumSystemVersion: '13.0'
+  target:
+    - target: dmg
+      arch: [universal]
+    - target: zip
+      arch: [universal]
+  hardenedRuntime: true
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  extendInfo:
+    # Menu bar app: no Dock icon.
+    LSUIElement: true
+  notarize: false
+
+mas:
+  type: distribution
+  hardenedRuntime: false
+  entitlements: build/entitlements.mas.plist
+  entitlementsInherit: build/entitlements.mas.inherit.plist
+  # Download from the Apple Developer portal; not committed.
+  provisioningProfile: build/embedded.provisionprofile
+
+masDev:
+  type: development
+  entitlements: build/entitlements.mas.plist
+  entitlementsInherit: build/entitlements.mas.inherit.plist
+  provisioningProfile: build/development.provisionprofile
+
+dmg:
+  artifactName: ${productName}-${version}.${ext}
+
+win:
+  target:
+    - target: nsis
+      arch: [x64, arm64]
+  artifactName: ${productName}-${version}-${arch}.${ext}
+
+nsis:
+  oneClick: true
+  perMachine: false
+  shortcutName: Color Picker
+
+appx:
+  # Values from Partner Center > Product identity.
+  identityName: TODO.ColorPicker
+  publisher: CN=TODO-PUBLISHER-ID
+  publisherDisplayName: Mario Kernich
+  displayName: Color Picker
+  applicationId: ColorPicker
+  backgroundColor: transparent
+  showNameOnTiles: false
+  languages: [en-US, de-DE]

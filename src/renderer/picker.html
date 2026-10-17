@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"
+    />
+    <title>Color Picker</title>
+  </head>
+  <body>
+    <canvas id="screen"></canvas>
+    <div id="loupe" hidden>
+      <canvas id="loupe-canvas"></canvas>
+      <div id="loupe-label"></div>
+    </div>
+    <div id="hint" hidden></div>
+    <script type="module" src="./src/picker/main.ts"></script>
+  </body>
+</html>
