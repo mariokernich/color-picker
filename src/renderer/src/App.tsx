@@ -6,12 +6,11 @@ import { ConfirmProvider } from './components/Confirm'
 import { MenuProvider } from './components/Menu'
 import { api } from './lib/api'
 import { AppContext, AppContextValue, View } from './lib/app'
-import { useAppData, useLicense, usePlatform } from './lib/hooks'
+import { useAppData, usePlatform } from './lib/hooks'
 import { ColorView } from './views/ColorView'
 import { ContrastView } from './views/ContrastView'
 import { Home } from './views/Home'
 import { PaletteView } from './views/PaletteView'
-import { Paywall } from './views/Paywall'
 import { SettingsView } from './views/SettingsView'
 
 interface Toast {
@@ -22,7 +21,6 @@ interface Toast {
 
 export function App() {
   const data = useAppData()
-  const license = useLicense()
   const platform = usePlatform()
   const [stack, setStack] = useState<View[]>([{ name: 'home' }])
   const [toast, setToast] = useState<Toast | null>(null)
@@ -72,7 +70,6 @@ export function App() {
     if (!data || !platform) return null
     return {
       data,
-      license,
       platform,
       isMac: platform.platform === 'darwin',
       view,
@@ -92,19 +89,16 @@ export function App() {
       },
       toast: showToast
     }
-  }, [data, license, platform, view, push, back, formatId, showToast])
+  }, [data, platform, view, push, back, formatId, showToast])
 
   if (!context) return <div className="loading" />
-
-  // Without an entitlement only the paywall and settings are reachable.
-  const locked = license !== null && !license.entitled && view.name !== 'settings'
 
   return (
     <AppContext.Provider value={context}>
       <ConfirmProvider>
         <MenuProvider>
-          <div className="app" key={locked ? 'locked' : stack.length}>
-            {locked ? <Paywall /> : renderView(view)}
+          <div className="app" key={stack.length}>
+            {renderView(view)}
           </div>
           {toast && (
             <div className="toast" key={toast.id} role="status">
@@ -130,7 +124,5 @@ function renderView(view: View) {
       return <ContrastView foreground={view.foreground} background={view.background} />
     case 'settings':
       return <SettingsView />
-    case 'paywall':
-      return <Paywall />
   }
 }

@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
 import { AppApi, IPC, Route } from '../shared/api'
-import type { AppData, LicenseState } from '../shared/types'
+import type { AppData } from '../shared/types'
 
 function subscribe<T>(channel: string, listener: (value: T) => void): () => void {
   const handler = (_event: IpcRendererEvent, value: T): void => listener(value)
@@ -20,10 +20,6 @@ const api: AppApi = {
   getPlatform: () => ipcRenderer.invoke(IPC.getPlatform),
   openScreenSettings: () => ipcRenderer.invoke(IPC.openScreenSettings),
   openExternal: (url) => ipcRenderer.invoke(IPC.openExternal, url),
-  getLicense: () => ipcRenderer.invoke(IPC.getLicense),
-  onLicense: (listener) => subscribe<LicenseState>(IPC.licenseChanged, listener),
-  purchase: () => ipcRenderer.invoke(IPC.purchase),
-  restore: () => ipcRenderer.invoke(IPC.restore),
   onNavigate: (listener) => subscribe<Route>(IPC.navigate, listener),
   hidePopover: () => ipcRenderer.send(IPC.hidePopover),
   quit: () => ipcRenderer.send(IPC.quit)

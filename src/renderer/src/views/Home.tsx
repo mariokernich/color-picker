@@ -11,7 +11,6 @@ import { api } from '../lib/api'
 import { useApp } from '../lib/app'
 import { colorMenuItems } from '../lib/colorMenu'
 import { paletteMenuItems } from '../lib/paletteMenu'
-import { LicenseBadge } from './Paywall'
 
 const HISTORY_PREVIEW = 24
 
@@ -158,9 +157,6 @@ export function Home() {
         </Section>
       </div>
 
-      <footer className="footer">
-        <LicenseBadge />
-      </footer>
     </div>
   )
 }

@@ -2,11 +2,10 @@ import type { ReactNode } from 'react'
 import { COLOR_FORMATS } from '@shared/formats'
 import { PRODUCT } from '@shared/product'
 import type { Settings } from '@shared/types'
-import { Button, Segmented, Toggle, ViewHeader } from '../components/controls'
+import { Segmented, Toggle, ViewHeader } from '../components/controls'
 import { ShortcutRecorder } from '../components/ShortcutRecorder'
 import { api } from '../lib/api'
 import { useApp } from '../lib/app'
-import { describeLicense, manageSubscriptionUrl, offersUpgrade } from './Paywall'
 
 function Row({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
@@ -21,7 +20,7 @@ function Row({ label, hint, children }: { label: string; hint?: string; children
 }
 
 export function SettingsView() {
-  const { data, dispatch, back, isMac, platform, license, push } = useApp()
+  const { data, dispatch, back, isMac, platform } = useApp()
   const settings = data.settings
   const set = (patch: Partial<Settings>): void => dispatch({ type: 'updateSettings', patch })
   const trayName = isMac ? 'menu bar icon' : 'tray icon'
@@ -94,23 +93,6 @@ export function SettingsView() {
           </Row>
           <Row label={`Show ${PRODUCT.name}`}>
             <ShortcutRecorder kind="popover" label="Show window" value={settings.popoverShortcut} isMac={isMac} />
-          </Row>
-        </div>
-
-        <div className="settings-group">
-          <h2 className="section__title">Subscription</h2>
-          <Row label={license ? describeLicense(license) : 'Checking…'} hint={license?.error ?? undefined}>
-            {license && offersUpgrade(license) ? (
-              <Button size="sm" variant="primary" onClick={() => push({ name: 'paywall' })}>
-                Upgrade
-              </Button>
-            ) : (
-              manageSubscriptionUrl(license) && (
-                <Button size="sm" onClick={() => void api.openExternal(manageSubscriptionUrl(license)!)}>
-                  Manage
-                </Button>
-              )
-            )}
           </Row>
         </div>
 

@@ -1,7 +1,6 @@
 import type { AppApi, Route } from '@shared/api'
-import { PRODUCT } from '@shared/product'
 import { Action, createInitialData, reduce, ReduceContext } from '@shared/state'
-import type { AppData, LicenseState } from '@shared/types'
+import type { AppData } from '@shared/types'
 
 /**
  * In-memory stand-in for the Electron bridge so the UI can be developed and screenshotted in
@@ -21,18 +20,6 @@ export function createMockApi(): AppApi {
     { type: 'addColors', hexes: ['#F72585', '#7209B7', '#3A0CA3', '#4361EE', '#4CC9F0', '#2B2D42', '#8D99AE', '#EDF2F4', '#EF233C', '#D90429', '#FFBE0B', '#FB5607'] }
   )
   const query = new URLSearchParams(location.search)
-  const status = (query.get('license') as LicenseState['status']) ?? 'trial'
-  const license: LicenseState = {
-    provider: 'local',
-    status,
-    entitled: status === 'trial' || status === 'active',
-    trialEndsAt: Date.now() + 23 * 24 * 3600 * 1000,
-    expiresAt: null,
-    product: { id: 'mock', title: `${PRODUCT.name} Pro`, price: '9,99 €', trialDays: 30 },
-    canPurchase: true,
-    busy: false,
-    error: null
-  }
   const stateListeners = new Set<(data: AppData) => void>()
   const routeListeners = new Set<(route: Route) => void>()
   const subscribe = <T,>(set: Set<(value: T) => void>, listener: (value: T) => void) => {
@@ -68,10 +55,6 @@ export function createMockApi(): AppApi {
     }),
     openScreenSettings: async () => {},
     openExternal: async (url) => void window.open(url),
-    getLicense: async () => license,
-    onLicense: () => () => {},
-    purchase: async () => {},
-    restore: async () => {},
     onNavigate: (listener) => subscribe(routeListeners, listener),
     hidePopover: () => {},
     quit: () => {}

@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 import type { Action } from '@shared/state'
-import type { AppData, CollectionId, LicenseState, PlatformInfo } from '@shared/types'
+import type { AppData, CollectionId, PlatformInfo } from '@shared/types'
 
 export type View =
   | { name: 'home' }
@@ -8,11 +8,9 @@ export type View =
   | { name: 'color'; collection: CollectionId; colorId: string }
   | { name: 'contrast'; foreground?: string; background?: string }
   | { name: 'settings' }
-  | { name: 'paywall' }
 
 export interface AppContextValue {
   data: AppData
-  license: LicenseState | null
   platform: PlatformInfo
   isMac: boolean
   view: View

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { AppData, LicenseState, PlatformInfo } from '@shared/types'
+import type { AppData, PlatformInfo } from '@shared/types'
 import { api } from './api'
 
 export function useAppData(): AppData | null {
@@ -14,20 +14,6 @@ export function useAppData(): AppData | null {
     }
   }, [])
   return data
-}
-
-export function useLicense(): LicenseState | null {
-  const [license, setLicense] = useState<LicenseState | null>(null)
-  useEffect(() => {
-    let active = true
-    void api.getLicense().then((initial) => active && setLicense(initial))
-    const unsubscribe = api.onLicense(setLicense)
-    return () => {
-      active = false
-      unsubscribe()
-    }
-  }, [])
-  return license
 }
 
 /** Refreshes when the window regains focus, e.g. after granting screen access in System Settings. */

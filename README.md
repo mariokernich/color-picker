@@ -19,8 +19,8 @@ copies colors in the format you need.
   .NET, Java, Unity, OpenGL, …).
 - **Contrast checker**: WCAG 2 ratio with AA/AAA results for normal text, large text and UI components.
 - Light and dark mode, native vibrancy on macOS, customizable shortcuts, open at login.
-- **Monetization**: yearly subscription with a free trial through the Mac App Store and the
-  Microsoft Store. See [docs/STORE.md](docs/STORE.md).
+- **Distribution**: paid app (one-time purchase, 9.99) in the Mac App Store and the Microsoft Store,
+  without in-app purchases. See [docs/STORE.md](docs/STORE.md).
 
 <p align="center"><img src="docs/screenshots/picker.png" width="420" alt="Picker loupe"></p>
 
@@ -37,23 +37,15 @@ npm run typecheck
 
 The UI can also be opened in a plain browser with an in-memory mock of the Electron bridge, which is
 handy for design work: run `npm run dev` and open the renderer URL printed by electron-vite. Query
-parameters such as `?route=settings`, `?license=expired` or `?platform=win32` switch views and states.
-
-Test the subscription states without store accounts:
-
-```bash
-COLOR_PICKER_LICENSE=expired npm run dev   # trial | active | expired | none
-```
-
-In development builds the "Subscribe" button simulates a purchase.
+parameters such as `?route=settings` or `?platform=win32` switch views and platforms.
 
 ### Packaging
 
 | Command              | Output                                          | Run on  |
 | -------------------- | ----------------------------------------------- | ------- |
-| `npm run dist:mac`   | Universal DMG + ZIP (direct download)           | macOS   |
+| `npm run dist:mac`   | Universal DMG + ZIP (testing only)              | macOS   |
 | `npm run dist:mas`   | Mac App Store package (`.pkg`)                  | macOS   |
-| `npm run dist:win`   | NSIS installer, x64 + arm64 (direct download)   | Windows |
+| `npm run dist:win`   | NSIS installer, x64 + arm64 (testing only)      | Windows |
 | `npm run dist:appx`  | Microsoft Store package (`.appx`)               | Windows |
 | `npm run icons`      | Regenerates all icons from `scripts/generate-icons.mjs` | any |
 
@@ -64,7 +56,7 @@ Signing, store identifiers and the release checklist are described in [docs/STOR
 ```
 src/
   shared/     Pure TypeScript used by every process: color math, formats, contrast,
-              state reducer, export, product configuration (unit tested)
+              state reducer, export, app identity (unit tested)
   main/       Electron main process
     index.ts      App lifecycle, IPC, wiring
     store.ts      JSON persistence of the state in the user data folder
@@ -72,7 +64,6 @@ src/
     windows.ts    Popover window and its placement next to the tray icon
     tray.ts       Menu bar / tray icon and context menu
     shortcuts.ts  Global shortcuts
-    license/      Trial and store subscriptions (Mac App Store, Microsoft Store, local)
   preload/    Typed, sandboxed bridges (`window.api`, `window.picker`)
   renderer/   React UI for the popover and a lightweight canvas UI for the picker overlay
 ```

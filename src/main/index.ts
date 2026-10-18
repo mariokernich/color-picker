@@ -17,7 +17,6 @@ import { formatColor } from '../shared/formats'
 import { PRODUCT } from '../shared/product'
 import { Action, LOUPE_SIZE, LOUPE_ZOOM } from '../shared/state'
 import type { AppData, CollectionId, ExportFormat, PlatformInfo, ScreenAccess } from '../shared/types'
-import { LicenseService } from './license'
 import { Picker } from './picker'
 import { Shortcuts } from './shortcuts'
 import { DataStore } from './store'
@@ -40,7 +39,6 @@ function main(): void {
   const dataPath = join(app.getPath('userData'), 'data.json')
   const isFirstRun = !existsSync(dataPath)
   const store = new DataStore(dataPath)
-  const license = new LicenseService()
   const popover = createPopoverWindow()
   let popoverWasVisible = false
   let suppressBlur = false
@@ -93,10 +91,6 @@ function main(): void {
 
   const startPicker = async (): Promise<void> => {
     if (picker.isActive) return
-    if (!license.entitled) {
-      showPopover('paywall')
-      return
-    }
     const access = screenAccess()
     if (access === 'denied' || access === 'restricted') {
       // The popover shows how to grant the permission.
@@ -164,7 +158,6 @@ function main(): void {
       applyLoginItem(data.settings.launchAtLogin)
     }
   })
-  license.subscribe((state) => sendToPopover(IPC.licenseChanged, state))
 
   popover.on('blur', () => {
     if (suppressBlur || popover.webContents.isDevToolsOpened()) return
@@ -228,9 +221,6 @@ function main(): void {
   ipcMain.handle(IPC.openExternal, (_event, url: string) => {
     if (/^(https:|mailto:)/.test(url)) return shell.openExternal(url)
   })
-  ipcMain.handle(IPC.getLicense, () => license.state)
-  ipcMain.handle(IPC.purchase, () => license.purchase())
-  ipcMain.handle(IPC.restore, () => license.restore())
   ipcMain.on(IPC.hidePopover, () => popover.hide())
   ipcMain.on(IPC.quit, () => app.quit())
 
@@ -238,8 +228,6 @@ function main(): void {
   // A menu bar app keeps running without visible windows.
   app.on('window-all-closed', () => {})
   app.on('before-quit', () => store.flush())
-
-  void license.init()
 
   // Tray icons are easy to miss (especially in the Windows overflow area), so introduce the app once.
   if (isFirstRun || !app.isPackaged) {

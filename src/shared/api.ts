@@ -1,5 +1,5 @@
 import type { Action } from './state'
-import type { AppData, CollectionId, ExportFormat, LicenseState, PlatformInfo } from './types'
+import type { AppData, CollectionId, ExportFormat, PlatformInfo } from './types'
 
 export const IPC = {
   getState: 'state:get',
@@ -13,10 +13,6 @@ export const IPC = {
   getPlatform: 'platform:get',
   openScreenSettings: 'platform:open-screen-settings',
   openExternal: 'platform:open-external',
-  getLicense: 'license:get',
-  licenseChanged: 'license:changed',
-  purchase: 'license:purchase',
-  restore: 'license:restore',
   hidePopover: 'popover:hide',
   navigate: 'popover:navigate',
   quit: 'app:quit',
@@ -35,7 +31,7 @@ export interface ShortcutResult {
 }
 
 /** Views the main process can ask the popover to show, e.g. from the tray menu. */
-export type Route = 'home' | 'settings' | 'contrast' | 'paywall'
+export type Route = 'home' | 'settings' | 'contrast'
 
 /** Exposed to the popover window as `window.api`. */
 export interface AppApi {
@@ -51,10 +47,6 @@ export interface AppApi {
   getPlatform(): Promise<PlatformInfo>
   openScreenSettings(): Promise<void>
   openExternal(url: string): Promise<void>
-  getLicense(): Promise<LicenseState>
-  onLicense(listener: (license: LicenseState) => void): () => void
-  purchase(): Promise<void>
-  restore(): Promise<void>
   onNavigate(listener: (route: Route) => void): () => void
   hidePopover(): void
   quit(): void
