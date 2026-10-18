@@ -21,6 +21,10 @@ npm run dist:mas | dist:mas-dev | dist:appx   # store packages
 
 Run `npm run typecheck && npm test` before every commit.
 
+Every push to `main` runs CI, builds release packages into a **draft** GitHub release and, for
+changes in `site/`, deploys the website. Never publish release drafts or DMG/EXE builds: the app is
+paid and the packages contain no purchase check.
+
 ## Architecture in one paragraph
 
 `src/shared` holds pure, tested logic (color math, formats, contrast, the state reducer, export).
