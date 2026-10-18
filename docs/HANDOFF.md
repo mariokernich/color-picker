@@ -118,15 +118,15 @@ it everywhere:
 
 ### 5.2 Certificates, profiles, entitlements (🧑/🌐 in the portal, 🤖 wires up)
 
-- [ ] App ID `de.kernich.colorpicker` (Certificates, Identifiers & Profiles).
-- [ ] Certificates in the login keychain: *Apple Distribution*, *Mac Installer Distribution*,
-      *Apple Development* (local testing).
-- [ ] Provisioning profiles: *Mac App Store* → `build/embedded.provisionprofile`,
-      *macOS App Development* → `build/development.provisionprofile` (both git-ignored).
-- [ ] 🤖 Add `com.apple.application-identifier`, `com.apple.developer.team-identifier` and
-      `com.apple.security.application-groups` (`TEAMID.de.kernich.colorpicker`) to
-      `build/entitlements.mas.plist` (snippet in `docs/STORE.md`). Electron does not start in the
-      sandbox without the application group.
+- [x] App ID `de.kernich.colorpicker` (team `34JNW2E282`).
+- [x] Certificates in the owner's login keychain: *Apple Distribution*, *3rd Party Mac Developer
+      Installer* (= Mac Installer Distribution), *Apple Development*. The *Developer ID
+      Application* certificate exists in the portal, but its private key is not on the owner's Mac.
+- [x] Provisioning profiles *Color Picker Mac App Store* → `build/embedded.provisionprofile` and
+      *Color Picker Mac Development* (includes the owner's MacBook Pro) →
+      `build/development.provisionprofile` (both git-ignored, only on the owner's Mac).
+- [x] Team entitlements in `build/entitlements.mas.plist`. `npm run dist:mas` produces a signed
+      universal `.pkg` (verified locally).
 
 ### 5.3 Test the sandboxed build locally (🤖 on the Mac)
 

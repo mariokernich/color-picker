@@ -33,8 +33,8 @@ Things to keep in mind:
    - Provisioning profile *Mac App Store* for the App ID → save as `build/embedded.provisionprofile`
      (git-ignored). For local sandbox testing also a *Mac Development* profile →
      `build/development.provisionprofile`.
-3. Add your team to `build/entitlements.mas.plist` (signing or launching fails without these;
-   Electron needs the application group for its sandboxed IPC):
+3. Team `34JNW2E282` is set in `build/entitlements.mas.plist` (signing or launching fails without
+   these; Electron needs the application group for its sandboxed IPC). For another team, replace it:
    ```xml
    <key>com.apple.application-identifier</key>
    <string>TEAMID.de.kernich.colorpicker</string>

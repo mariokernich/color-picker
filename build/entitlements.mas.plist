@@ -2,6 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
+    <key>com.apple.application-identifier</key>
+    <string>34JNW2E282.de.kernich.colorpicker</string>
+    <key>com.apple.developer.team-identifier</key>
+    <string>34JNW2E282</string>
+    <!-- Electron needs the application group for its sandboxed IPC. -->
+    <key>com.apple.security.application-groups</key>
+    <array>
+      <string>34JNW2E282.de.kernich.colorpicker</string>
+    </array>
     <key>com.apple.security.app-sandbox</key>
     <true/>
     <!-- Saving exported palettes via the save panel. -->
