@@ -51,6 +51,12 @@ parameters such as `?route=settings` or `?platform=win32` switch views and platf
 
 Signing, store identifiers and the release checklist are described in [docs/STORE.md](docs/STORE.md).
 
+### Website
+
+Landing page, privacy policy and imprint live in [`site/`](site) (plain HTML/CSS) and are deployed
+to GitHub Pages by `.github/workflows/pages.yml` on every push to `main`:
+https://mariokernich.github.io/color-picker/
+
 ## Architecture
 
 ```
@@ -78,4 +84,5 @@ src/
 
 ## License
 
-Proprietary. © Mario Kernich. All rights reserved.
+Proprietary, see [LICENSE](LICENSE). The source is public for transparency; building or
+distributing the app is not permitted. © Mario Kernich.

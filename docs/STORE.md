@@ -47,8 +47,9 @@ Things to keep in mind:
    ```
 4. App Store Connect → new macOS app with the bundle ID above, category *Graphics & Design*.
 5. **Pricing and Availability**: base price 9.99 USD, check the EUR price (9.99 €).
-6. App privacy: "Data Not Collected" (see [PRIVACY.md](PRIVACY.md)). Privacy policy URL: the
-   published `docs/PRIVACY.md`.
+6. App privacy: "Data Not Collected". Privacy policy URL:
+   `https://mariokernich.github.io/color-picker/privacy.html`, support/marketing URL:
+   `https://mariokernich.github.io/color-picker/` (sources in `site/`).
 
 ### Build & upload
 
@@ -74,7 +75,8 @@ Review notes to include:
    `appx.publisher` in `electron-builder.yml`.
 3. **Pricing and availability**: base price **9.99 USD**, check the EUR market price (9.99 €).
    Free trial: *No free trial*.
-4. Age rating, store listing (EN + DE), screenshots, privacy policy URL.
+4. Age rating, store listing (EN + DE), screenshots, privacy policy URL
+   (`https://mariokernich.github.io/color-picker/privacy.html`).
 
 ### Build & upload
 

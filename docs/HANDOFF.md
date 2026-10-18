@@ -65,15 +65,19 @@ replace it everywhere:
 - Keep the bundle ID `de.kernich.colorpicker` unless the owner wants a new one. It cannot be
   changed after the first App Store upload.
 
-## 4. Public privacy policy & support URL (🧑 decides, 🤖 implements) — **blocker**
+## 4. Website, privacy policy & imprint (🧑 one-time setup)
 
-Both stores require a **publicly reachable** privacy policy URL and support URL. The repository is
-**private**, so the current `PRODUCT.privacyUrl`
-(`github.com/mariokernich/color-picker/blob/main/docs/PRIVACY.md`) is not reachable.
+Landing page, privacy policy (DE + EN) and imprint are in `site/` and deploy to
+`https://mariokernich.github.io/color-picker/` via `.github/workflows/pages.yml`. The app links to
+the privacy page (`PRODUCT.privacyUrl` in `src/shared/product.ts`).
 
-Options: publish `docs/PRIVACY.md` on an own website (for example kernich.de/color-picker/privacy)
-or a small public GitHub Pages repo. Then update `PRODUCT.privacyUrl` in `src/shared/product.ts`.
-A German imprint (Impressum) on the support page is advisable for sales in Germany.
+- [ ] 🧑 Make the repository public (Settings → General → Danger Zone) or keep it private on a
+      paid GitHub plan; Pages on free accounts needs a public repository.
+- [ ] 🧑 Settings → Pages → Source: **GitHub Actions**, then re-run the "Website" workflow.
+- [ ] 🧑 Have the legal texts checked (they are templates, not legal advice). Add a VAT ID to the
+      imprint if one exists.
+- [ ] 🤖 Once the store listings are live, replace the two "Coming soon" store buttons in
+      `site/index.html` (remove `aria-disabled`, set `href`).
 
 ## 5. Mac App Store submission
 
@@ -117,7 +121,7 @@ prompt, export via save dialog (sandbox file access), settings persist, "Open at
 - [ ] 🤖 Screenshots in 2880×1800 (or 1440×900/2560×1600): picker loupe, popover with history and
       palettes, color editor, contrast checker. Take them on the real Mac (step 2), not from the
       Linux container.
-- [ ] Support URL and marketing URL.
+- [ ] Support URL and marketing URL: `https://mariokernich.github.io/color-picker/`.
 
 ### 5.5 Build, upload, review (🤖 builds, 🧑 submits)
 

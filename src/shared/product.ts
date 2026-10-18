@@ -3,5 +3,6 @@ export const PRODUCT = {
   name: 'Color Picker',
   appId: 'de.kernich.colorpicker',
   supportEmail: 'mario@kernich.de',
-  privacyUrl: 'https://github.com/mariokernich/color-picker/blob/main/docs/PRIVACY.md'
+  websiteUrl: 'https://mariokernich.github.io/color-picker/',
+  privacyUrl: 'https://mariokernich.github.io/color-picker/privacy.html'
 } as const
