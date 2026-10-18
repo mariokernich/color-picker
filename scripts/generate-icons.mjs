@@ -84,20 +84,12 @@ function appIcon() {
 </svg>`
 }
 
-/** Monochrome menu bar icon; macOS tints template images for light and dark menu bars. */
-function trayTemplate() {
+/** Three fanned color cards; lighter cards are drawn with reduced opacity. */
+function trayFan(color) {
+  const card = (angle, opacity) =>
+    `<rect x="5.5" y="2" width="5" height="11" rx="1.6" fill="${color}" fill-opacity="${opacity}" transform="rotate(${angle} 8 14)"/>`
   return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-  <circle cx="8" cy="8" r="6.1" fill="none" stroke="#000" stroke-width="1.7"/>
-  <rect x="6.1" y="6.1" width="3.8" height="3.8" rx="0.8" fill="#000"/>
-</svg>`
-}
-
-/** Colored tray icon for Windows and Linux. */
-function trayColor() {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-  ${colorRing(8, 8, 7.4, 4.6, 72)}
-  <circle cx="8" cy="8" r="4.6" fill="#F4F3FA"/>
-  <rect x="6.3" y="6.3" width="3.4" height="3.4" rx="0.7" fill="#5B4EF0"/>
+  ${card(-28, 0.3)}${card(0, 0.6)}${card(28, 1)}
 </svg>`
 }
 
@@ -118,10 +110,13 @@ function tile(width, height, scale) {
 
 render(appIcon(), 1024, 'build/icon.png')
 render(appIcon(), 512, 'resources/icon.png')
-render(trayTemplate(), 16, 'resources/trayTemplate.png')
-render(trayTemplate(), 32, 'resources/trayTemplate@2x.png')
-render(trayColor(), 16, 'resources/tray.png')
-render(trayColor(), 32, 'resources/tray@2x.png')
+// macOS tints template images itself; Windows/Linux get one variant per taskbar theme.
+render(trayFan('#000000'), 16, 'resources/trayTemplate.png')
+render(trayFan('#000000'), 32, 'resources/trayTemplate@2x.png')
+render(trayFan('#1A1A1A'), 16, 'resources/tray-light.png')
+render(trayFan('#1A1A1A'), 32, 'resources/tray-light@2x.png')
+render(trayFan('#FFFFFF'), 16, 'resources/tray-dark.png')
+render(trayFan('#FFFFFF'), 32, 'resources/tray-dark@2x.png')
 render(tile(50, 50, 1.2), 50, 'build/appx/StoreLogo.png')
 render(tile(44, 44, 1.2), 44, 'build/appx/Square44x44Logo.png')
 render(tile(150, 150, 0.9), 150, 'build/appx/Square150x150Logo.png')

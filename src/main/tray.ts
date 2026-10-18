@@ -1,5 +1,5 @@
 import { join } from 'node:path'
-import { Menu, MenuItemConstructorOptions, Tray, nativeImage } from 'electron'
+import { Menu, MenuItemConstructorOptions, Tray, nativeImage, nativeTheme } from 'electron'
 import { PRODUCT } from '../shared/product'
 
 const isMac = process.platform === 'darwin'
@@ -17,12 +17,24 @@ export interface TrayHandlers {
   quit: () => void
 }
 
+/**
+ * Template images adapt to light and dark menu bars on macOS. Windows has no such mechanism,
+ * so the icon follows the taskbar theme. `@2x` variants are picked up automatically.
+ */
+function trayIcon(): Electron.NativeImage {
+  if (isMac) {
+    const icon = nativeImage.createFromPath(resourcePath('trayTemplate.png'))
+    icon.setTemplateImage(true)
+    return icon
+  }
+  const dark = nativeTheme.shouldUseDarkColorsForSystemIntegratedUI
+  return nativeImage.createFromPath(resourcePath(dark ? 'tray-dark.png' : 'tray-light.png'))
+}
+
 export function createTray(handlers: TrayHandlers): Tray {
-  // Template images adapt to light/dark menu bars on macOS; `@2x` variants are picked up automatically.
-  const icon = nativeImage.createFromPath(resourcePath(isMac ? 'trayTemplate.png' : 'tray.png'))
-  if (isMac) icon.setTemplateImage(true)
-  const tray = new Tray(icon)
+  const tray = new Tray(trayIcon())
   tray.setToolTip(PRODUCT.name)
+  if (!isMac) nativeTheme.on('updated', () => tray.setImage(trayIcon()))
 
   const template: MenuItemConstructorOptions[] = [
     { label: 'Pick Color', click: handlers.pick },
