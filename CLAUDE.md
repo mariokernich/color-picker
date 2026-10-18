@@ -1,7 +1,8 @@
 # CLAUDE.md
 
 ChipDeck: a menu bar / tray color picker for macOS and Windows (Electron + React + TypeScript),
-sold as a paid app (9.99 one-time) in the Mac App Store and the Microsoft Store.
+free to download from GitHub Releases and sold as a paid app (9.99 one-time) in the Mac App Store and
+the Microsoft Store.
 
 **Start here:** [docs/HANDOFF.md](docs/HANDOFF.md) lists the current state and the next steps to
 the store release. [README.md](README.md) explains the architecture; [docs/STORE.md](docs/STORE.md)
@@ -21,9 +22,10 @@ npm run dist:mas | dist:mas-dev | dist:appx   # store packages
 
 Run `npm run typecheck && npm test` before every commit.
 
-Every push to `main` runs CI, builds release packages into a **draft** GitHub release and, for
-changes in `site/`, deploys the website. Never publish release drafts or DMG/EXE builds: the app is
-paid and the packages contain no purchase check.
+Every push to `main` runs CI, builds unsigned test packages into a **draft** GitHub release and, for
+changes in `site/`, deploys the website. Never publish those drafts: the macOS builds from CI are not
+signed or notarized. Public releases get a signed and notarized macOS build from
+`npm run dist:mac-release` on the owner's Mac (see docs/STORE.md).
 
 ## Architecture in one paragraph
 

@@ -2,9 +2,10 @@
 
 ## Business model
 
-ChipDeck is a **paid app**: a one-time purchase in the store, no in-app purchases, no
-subscription and no license code in the app. The stores handle payment, taxes, refunds and
-re-downloads.
+ChipDeck is **free to download** from GitHub Releases and a **paid app** in the stores: a one-time
+purchase, no in-app purchases, no subscription and no license code in the app. The store version
+is the convenient way to support development and get automatic updates. The stores handle
+payment, taxes, refunds and re-downloads.
 
 | | Mac App Store | Microsoft Store |
 | --- | --- | --- |
@@ -92,11 +93,24 @@ is needed for Store builds.
 Note: "Open at login" needs a `StartupTask` in packaged Store apps; enable
 `appx.addAutoLaunchExtension` if wanted. The setting is hidden in Store builds for now.
 
-## Builds outside the stores
+## GitHub releases (free download)
 
-`npm run dist:mac` and `npm run dist:win` produce a DMG and an NSIS installer. They contain no
-license check, so use them for testing only and do not publish them, otherwise the app is
-available for free.
+Public releases on GitHub contain:
+
+- **macOS**: universal DMG and ZIP, signed with *Developer ID Application: Mario Kernich
+  (34JNW2E282)* and notarized. Build them on the owner's Mac (the Developer ID key is only in that
+  login keychain), with the App Store Connect API key for notarization:
+  ```bash
+  APPLE_API_KEY=~/.appstoreconnect/private_keys/AuthKey_<KEYID>.p8 \
+  APPLE_API_KEY_ID=<KEYID> APPLE_API_ISSUER=<issuer id> \
+  npm run dist:mac-release
+  ```
+  Check with `spctl -a -vvv -t install dist/ChipDeck-<version>.dmg` (expects "Notarized Developer ID").
+- **Windows**: the NSIS installers (x64, arm64) from the CI draft release of the same commit. They
+  are unsigned, so SmartScreen warns on first launch.
+
+The CI drafts (`release.yml`) stay drafts: their macOS builds are neither signed nor notarized.
+Create the public release with a `v<version>` tag, upload the assets and publish it.
 
 ## Release checklist
 

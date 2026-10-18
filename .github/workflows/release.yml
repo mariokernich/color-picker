@@ -1,8 +1,8 @@
 name: Release
 
-# Builds macOS and Windows packages for every push to main and attaches them to a
-# draft release. Drafts are only visible to collaborators with write access, so the
-# paid app is not distributed for free even though the repository is public.
+# Builds macOS and Windows test packages for every push to main and attaches them to a
+# draft release. The macOS builds are not signed or notarized, so drafts are never
+# published; public releases use the signed build from `npm run dist:mac-release`.
 
 on:
   push:
