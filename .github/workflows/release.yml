@@ -25,11 +25,12 @@ jobs:
         include:
           - os: macos-latest
             name: mac
-            # Unsigned universal DMG/ZIP for testing; store builds need certificates (docs/STORE.md).
-            targets: --mac dmg zip
+            # Unsigned DMG/ZIP for testing; store builds need certificates (docs/STORE.md).
+            # CLI targets override the arch from electron-builder.yml, so it is set here.
+            targets: --mac dmg zip --universal
           - os: windows-latest
             name: windows
-            targets: --win nsis appx
+            targets: --win nsis appx --x64 --arm64
     runs-on: ${{ matrix.os }}
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: 'false'
