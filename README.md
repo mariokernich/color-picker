@@ -19,9 +19,8 @@ copies colors in the format you need.
   .NET, Java, Unity, OpenGL, …).
 - **Contrast checker**: WCAG 2 ratio with AA/AAA results for normal text, large text and UI components.
 - Light and dark mode, native vibrancy on macOS, customizable shortcuts, open at login.
-- **Distribution**: free download from [GitHub Releases](https://github.com/mariokernich/color-picker/releases/latest)
-  (signed and notarized on macOS), plus a paid version (one-time purchase, 9.99) in the Mac App Store
-  and the Microsoft Store without in-app purchases. See [docs/STORE.md](docs/STORE.md).
+- **Distribution**: paid app (one-time purchase, 9.99) in the Mac App Store and the Microsoft Store,
+  without in-app purchases. See [docs/STORE.md](docs/STORE.md).
 
 <p align="center"><img src="docs/screenshots/picker.png" width="420" alt="Picker loupe"></p>
 
