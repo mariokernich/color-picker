@@ -105,7 +105,14 @@ Public releases on GitHub contain:
   APPLE_API_KEY_ID=<KEYID> APPLE_API_ISSUER=<issuer id> \
   npm run dist:mac-release
   ```
-  Check with `spctl -a -vvv -t install dist/ChipDeck-<version>.dmg` (expects "Notarized Developer ID").
+  This notarizes and staples the app (also inside the ZIP) and signs the DMG. Notarize and staple
+  the DMG itself afterwards, then check it:
+  ```bash
+  xcrun notarytool submit dist/ChipDeck-<version>.dmg --key <p8> --key-id <KEYID> --issuer <issuer id> --wait
+  xcrun stapler staple dist/ChipDeck-<version>.dmg
+  spctl -a -vvv -t open --context context:primary-signature dist/ChipDeck-<version>.dmg
+  ```
+  `spctl` must report "Notarized Developer ID".
 - **Windows**: the NSIS installers (x64, arm64) from the CI draft release of the same commit. They
   are unsigned, so SmartScreen warns on first launch.
 

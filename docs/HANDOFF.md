@@ -39,8 +39,10 @@ browser, with the owner confirming.
 - CI release builds stay drafts: they are **unsigned** and for testing only. Public releases
   (`v<version>`) get a signed and notarized macOS build from `npm run dist:mac-release` on the
   owner's Mac plus the Windows installers from CI (see `docs/STORE.md`).
-- Current drafts: `v0.1.0-build.3` (correct architectures) and `v0.1.0-build.1` (outdated:
-  arm64-only macOS, x64-only Windows → delete, see 7.).
+- **Public release `v0.1.0`** (2026-10-18): signed and notarized universal DMG/ZIP, unsigned
+  Windows NSIS installers (x64, arm64) from CI draft `v0.1.0-build.4`. The free download is not
+  mentioned on the website or in the README on purpose.
+- Old CI drafts `v0.1.0-build.1/3/4` can be deleted (see 7.).
 
 ### Website (live)
 
