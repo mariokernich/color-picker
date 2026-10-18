@@ -2,7 +2,7 @@
 
 ## Business model
 
-Color Picker is a **paid app**: a one-time purchase in the store, no in-app purchases, no
+ChipDeck is a **paid app**: a one-time purchase in the store, no in-app purchases, no
 subscription and no license code in the app. The stores handle payment, taxes, refunds and
 re-downloads.
 
@@ -45,7 +45,9 @@ Things to keep in mind:
      <string>TEAMID.de.kernich.colorpicker</string>
    </array>
    ```
-4. App Store Connect → new macOS app with the bundle ID above, category *Graphics & Design*.
+4. App Store Connect → macOS app **"ChipDeck: Color Picker"** (Apple ID 6824296695, SKU
+   `chipdeck-macos`, bundle ID above). Plain "ChipDeck" is taken in the App Store; the app itself is
+   called ChipDeck. Category *Graphics & Design*.
 5. **Pricing and Availability**: base price 9.99 USD, check the EUR price (9.99 €).
 6. App privacy: "Data Not Collected". Privacy policy URL:
    `https://mariokernich.github.io/color-picker/privacy.html`, support/marketing URL:
@@ -54,14 +56,14 @@ Things to keep in mind:
 ### Build & upload
 
 ```bash
-npm run dist:mas        # dist/mas-universal/Color Picker-<version>.pkg
+npm run dist:mas        # dist/mas-universal/ChipDeck-<version>-universal.pkg
 ```
 
 Upload the `.pkg` with **Transporter**, select the build in the app version and submit it.
 
 Review notes to include:
 
-> Color Picker is a menu bar app (no Dock icon). Click the icon in the menu bar to open it.
+> ChipDeck is a menu bar app (no Dock icon). Click the icon in the menu bar to open it.
 > Picking colors from the screen requires the Screen Recording permission, which macOS asks for the
 > first time "Pick Color" is used. Screen contents are only processed in memory to read pixel colors.
 
@@ -69,8 +71,8 @@ Review notes to include:
 
 ### One-time setup
 
-1. Partner Center → Apps and games → reserve the app name. The plain name "Color Picker" is
-   probably taken; reserve an alternative such as "Color Picker – Loupe & Palettes" early.
+1. Partner Center → Apps and games → reserve the app name. Use the same store name as in the
+   Mac App Store, "ChipDeck: Color Picker" (plain "ChipDeck" is taken in the App Store).
 2. Product identity → copy *Package/Identity/Name* and *Publisher* into `appx.identityName` and
    `appx.publisher` in `electron-builder.yml`.
 3. **Pricing and availability**: base price **9.99 USD**, check the EUR market price (9.99 €).

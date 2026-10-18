@@ -1,5 +1,5 @@
 appId: de.kernich.colorpicker
-productName: Color Picker
+productName: ChipDeck
 copyright: Copyright © 2026 Mario Kernich
 directories:
   buildResources: build
@@ -53,14 +53,14 @@ win:
 nsis:
   oneClick: true
   perMachine: false
-  shortcutName: Color Picker
+  shortcutName: ChipDeck
 
 appx:
   # Values from Partner Center > Product identity.
   identityName: TODO.ColorPicker
   publisher: CN=TODO-PUBLISHER-ID
   publisherDisplayName: Mario Kernich
-  displayName: Color Picker
+  displayName: ChipDeck
   applicationId: ColorPicker
   backgroundColor: transparent
   showNameOnTiles: false

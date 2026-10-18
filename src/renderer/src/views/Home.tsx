@@ -1,6 +1,7 @@
 import { DragEvent, useState } from 'react'
 import { ChevronRight, Contrast, MoreHorizontal, Pipette, Plus, Settings, ShieldAlert } from 'lucide-react'
 import { COLOR_FORMATS } from '@shared/formats'
+import { PRODUCT } from '@shared/product'
 import type { Palette } from '@shared/types'
 import { Button, IconButton, Section } from '../components/controls'
 import { useConfirm } from '../components/Confirm'
@@ -69,7 +70,7 @@ export function Home() {
             <ShieldAlert size={18} />
             <div>
               <strong>Screen access needed</strong>
-              <p>Allow Color Picker under Screen &amp; System Audio Recording to pick colors from other apps.</p>
+              <p>Allow {PRODUCT.name} under Screen &amp; System Audio Recording to pick colors from other apps.</p>
               <Button size="sm" onClick={() => void api.openScreenSettings()}>
                 Open System Settings
               </Button>

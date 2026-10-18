@@ -112,7 +112,7 @@ function main(): void {
         type: 'warning',
         message: 'The screen could not be captured.',
         detail: isMac
-          ? 'Please allow screen recording for Color Picker in System Settings > Privacy & Security.'
+          ? `Please allow screen recording for ${PRODUCT.name} in System Settings > Privacy & Security.`
           : String(error instanceof Error ? error.message : error)
       })
     }

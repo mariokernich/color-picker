@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Color Picker: a menu bar / tray color picker for macOS and Windows (Electron + React + TypeScript),
+ChipDeck: a menu bar / tray color picker for macOS and Windows (Electron + React + TypeScript),
 sold as a paid app (9.99 one-time) in the Mac App Store and the Microsoft Store.
 
 **Start here:** [docs/HANDOFF.md](docs/HANDOFF.md) lists the current state and the next steps to

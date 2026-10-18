@@ -89,17 +89,16 @@ Windows checklist:
 
 Fix what fails on a `fix/*` branch with small commits; run `npm run typecheck && npm test` first.
 
-## 3. Decide the name (🧑, blocks the store records)
+## 3. Name ✅
 
-"Color Picker" is generic, almost certainly taken in both stores and not protectable. Pick a
-distinctive name and check availability in App Store Connect and Partner Center. Then 🤖 replace
-it everywhere:
-
-- `src/shared/product.ts` (`PRODUCT.name`), `package.json` (`productName`),
-  `electron-builder.yml` (`productName`, `nsis.shortcutName`, `appx.displayName`),
-  `site/*.html`, `README.md`, `docs/*`, UI strings (search for `Color Picker`).
-- Keep the bundle ID `de.kernich.colorpicker` unless the owner wants a new one. It cannot change
-  after the first App Store upload.
+- The app is called **ChipDeck** (fanned paint chips, matching the icon). Store name in App Store
+  Connect: **"ChipDeck: Color Picker"**, because plain "ChipDeck" is already reserved there. Use
+  the same store name in Partner Center.
+- The name lives in `src/shared/product.ts` (`PRODUCT.name`), `package.json` (`productName`),
+  `electron-builder.yml` (`productName`, `nsis.shortcutName`, `appx.displayName`), `site/*.html`
+  and the docs.
+- Bundle ID stays `de.kernich.colorpicker`; the repository and website URLs keep `color-picker`.
+- 🧑 Open: trademark search (EUIPO/DPMA) for "ChipDeck" before the first release.
 
 ## 4. Legal texts (🧑)
 
@@ -139,7 +138,8 @@ export via save dialog (sandbox file access), settings persist, "Open at login" 
 
 ### 5.4 App Store Connect record (🧑/🌐, 🤖 prepares texts and screenshots)
 
-- [ ] New macOS app: name (step 3), primary language English, add German, bundle ID, SKU.
+- [x] New macOS app "ChipDeck: Color Picker" (Apple ID 6824296695, SKU `chipdeck-macos`, English).
+- [ ] Add German as a localization.
 - [ ] Category *Graphics & Design* (secondary *Developer Tools*).
 - [ ] **Pricing:** base price 9.99 USD, then explicitly set the EUR price to 9.99 €.
 - [ ] App Privacy: **Data Not Collected**. Privacy URL:

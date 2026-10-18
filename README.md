@@ -1,4 +1,4 @@
-# Color Picker
+# ChipDeck
 
 A fast, unobtrusive color picker for **macOS** and **Windows**. It lives in the menu bar / system tray,
 picks any pixel on any screen with a magnifying loupe, keeps a history, organizes palettes and
