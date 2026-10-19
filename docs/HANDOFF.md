@@ -1,6 +1,6 @@
 # Handoff: Current State & Next Steps
 
-_Last updated: 2026-10-18_
+_Last updated: 2026-10-19_
 
 This document is for the next developer or AI assistant working on this repository on a local Mac
 or Windows machine. Read it together with [`CLAUDE.md`](../CLAUDE.md) (conventions),
@@ -15,7 +15,8 @@ browser, with the owner confirming.
 ### App (on `main`)
 
 - Electron 44 + React 19 + TypeScript menu bar / tray app for macOS and Windows.
-- Features: screen picker with loupe on every display, color history, palettes (drag & drop,
+- Features: live screen picker with loupe on every display (native sampler in `native/sampler`,
+  optional "Freeze screen while picking"), color history, palettes (drag & drop,
   export as JSON/CSS/SCSS/Tailwind/GIMP), color editor with 17 copy formats, WCAG contrast
   checker, settings (copy format, global shortcuts, tray click action, theme, history size, open at
   login).
@@ -24,7 +25,7 @@ browser, with the owner confirming.
 - **Business model: free download from GitHub Releases, paid app (one-time purchase of 9.99 USD /
   9.99 EUR) in the Mac App Store and the Microsoft Store.** No in-app purchases, no subscription, no
   license code in the app.
-- 60 unit tests (Vitest), typecheck and build are green.
+- 65 unit tests (Vitest), typecheck and build are green.
 
 ### Repository & automation
 
@@ -33,7 +34,7 @@ browser, with the owner confirming.
 - GitHub Actions:
   | Workflow | Trigger | What it does |
   | --- | --- | --- |
-  | `ci.yml` (CI) | push to `main`, PRs | typecheck, tests, build |
+  | `ci.yml` (CI) | push to `main`, PRs | typecheck, tests, build; builds the native sampler on macOS and Windows for x64 + arm64 |
   | `release.yml` (Release) | push to `main` (except docs/site), manual | builds macOS universal DMG/ZIP and Windows NSIS (x64+arm64) + APPX (x64, arm64), attaches them to a **draft** release `v<version>-build.<run>` |
   | `pages.yml` (Website) | push to `main` touching `site/`, manual | deploys `site/` to GitHub Pages |
 - CI release builds stay drafts: they are **unsigned** and for testing only. Public releases
@@ -77,9 +78,15 @@ macOS checklist:
 - [ ] If permission is denied, the popover shows the "Screen access needed" banner and its button
       opens System Settings.
 - [ ] Overlay covers menu bar and Dock, also on a second display and over full-screen apps.
-- [ ] **Color accuracy:** compare picked values with *Digital Color Meter* ("Display in sRGB") on a
-      P3/Retina display. If they differ, fix the color space handling of the `desktopCapturer`
-      capture in `src/main/picker.ts` before release.
+- [ ] **Live picker:** a playing video stays live under the loupe; the loupe never shows itself
+      or the picker overlay (no "loupe in loupe", no darkening); clicking picks the pixel under the
+      cursor, also on a second display and over full-screen apps.
+- [ ] **Color accuracy (live):** compare picked values with *Digital Color Meter* ("Display in
+      sRGB") on a P3/Retina display. The sampler converts to sRGB
+      (`native/sampler/src/sampler_mac.mm`), so they should match exactly.
+- [ ] **Freeze screen while picking** (Settings): the picker shows a still image again. Compare its
+      colors with Digital Color Meter too; if they differ, fix the color space handling of the
+      `desktopCapturer` capture in `src/main/picker.ts`.
 - [ ] Global shortcut (default ⌘⌥⇧C) works from other apps; shortcut recorder in Settings works.
 - [ ] Clicking the menu bar icon while the popover is open closes it (no flicker/reopen).
 - [ ] Export keeps the popover open and writes the file.
@@ -89,6 +96,13 @@ Windows checklist:
 - [ ] Tray icon switches between light/dark variant with the taskbar theme.
 - [ ] Popover opens next to the tray icon (taskbar bottom, top, left, right).
 - [ ] Overlay covers the taskbar on all monitors, including mixed DPI (100 % + 150 %).
+- [ ] **Live picker:** a playing video stays live under the loupe; the loupe never shows itself
+      (requires Windows 10 2004+ for `WDA_EXCLUDEFROMCAPTURE`); picked values match the pixel under
+      the cursor on every monitor, including mixed DPI. If the loupe is offset on the 150 %
+      monitor, check the physical origin from `screen.dipToScreenPoint` in `src/main/sampler.ts`.
+- [ ] **Freeze screen while picking** (Settings) still works.
+- [ ] `npm install` without the Visual Studio Build Tools only warns, and the picker freezes the
+      screen.
 - [ ] Global shortcut (default Ctrl+Alt+Shift+C) works.
 
 Fix what fails on a `fix/*` branch with small commits; run `npm run typecheck && npm test` first.

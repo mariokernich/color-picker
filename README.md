@@ -26,13 +26,16 @@ copies colors in the format you need.
 
 ## Development
 
-Requirements: Node.js 22+, npm 10+.
+Requirements: Node.js 22+, npm 10+, and on macOS / Windows a C++ toolchain (Xcode Command Line
+Tools or Visual Studio Build Tools with "Desktop development with C++") for the native screen
+sampler. `npm install` builds it; without the toolchain the picker falls back to a frozen screen.
 
 ```bash
 npm install
 npm run dev        # starts Electron with hot reload
 npm test           # unit tests (Vitest)
 npm run typecheck
+npm run native     # rebuilds the native screen sampler (optionally for an arch: -- arm64)
 ```
 
 The UI can also be opened in a plain browser with an in-memory mock of the Electron bridge, which is
@@ -66,20 +69,31 @@ src/
   main/       Electron main process
     index.ts      App lifecycle, IPC, wiring
     store.ts      JSON persistence of the state in the user data folder
-    picker.ts     Screen capture and full-screen overlay windows per display
+    picker.ts     Full-screen overlay windows per display, live or with a frozen capture
+    sampler.ts    Loads the native screen sampler
     windows.ts    Popover window and its placement next to the tray icon
     tray.ts       Menu bar / tray icon and context menu
     shortcuts.ts  Global shortcuts
   preload/    Typed, sandboxed bridges (`window.api`, `window.picker`)
   renderer/   React UI for the popover and a lightweight canvas UI for the picker overlay
+native/
+  sampler/    N-API addon that reads live screen pixels (GDI on Windows, ScreenCaptureKit on macOS)
 ```
 
 - The **main process owns the state**. Windows send actions (`src/shared/state.ts`) and receive
   snapshots, so the reducer is the single place where data changes and can be tested in isolation.
-- **Picking** captures every display at its native resolution (`desktopCapturer`), then covers each
-  display with an overlay showing the frozen capture and the loupe. Reading pixels from the capture
-  gives exact values and behaves identically on macOS and Windows. On macOS this requires the
-  *Screen & System Audio Recording* permission, which the app explains when it is missing.
+- **Picking** covers every display with a transparent overlay that only draws the loupe. While the
+  cursor moves, the overlay reads the pixels around it from the native sampler, so the screen stays
+  live (videos, animations). The sampler returns exact 8-bit BGRA pixels: Windows reads the composed
+  desktop with GDI and hides the overlays from it with `WDA_EXCLUDEFROMCAPTURE`; macOS runs a
+  ScreenCaptureKit stream per display that leaves out the app's own windows and converts to sRGB.
+  Browser screen capture (`getUserMedia`) is not used on purpose: it goes through YUV video, which
+  blurs single pixels. The sampler is built by `scripts/build-native.mjs` on install and for every
+  packaged architecture (electron-builder `beforePack`).
+- With **Freeze screen while picking** (Settings), or when the sampler is not available, the picker
+  captures every display at its native resolution (`desktopCapturer`) and shows that still image.
+- On macOS both modes require the *Screen & System Audio Recording* permission, which the app
+  explains when it is missing.
 - All windows run with `sandbox`, `contextIsolation` and a strict Content Security Policy.
 
 ## License
