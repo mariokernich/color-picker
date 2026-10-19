@@ -23,6 +23,20 @@ body {
   image-rendering: pixelated;
 }
 
+/* Live overlays let the screen show through. The tiny alpha keeps them from becoming
+   click-through for the window system; the overlay itself is never part of the reads. */
+html:has(body.live) {
+  background: transparent;
+}
+
+body.live {
+  background: rgba(0, 0, 0, 0.004);
+}
+
+body.live #screen {
+  display: none;
+}
+
 #loupe {
   --picked: #000;
   --picked-text: #fff;

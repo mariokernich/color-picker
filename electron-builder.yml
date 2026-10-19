@@ -10,6 +10,12 @@ files:
   - '!**/*.map'
 asarUnpack:
   - resources/**
+# Live screen sampler, built for each packaged architecture by the beforePack hook.
+beforePack: ./scripts/build-native.mjs
+extraResources:
+  - from: native/sampler/prebuilds/${platform}-${arch}
+    to: native
+    filter: [sampler.node]
 
 mac:
   category: public.app-category.graphics-design

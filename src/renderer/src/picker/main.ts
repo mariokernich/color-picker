@@ -1,5 +1,6 @@
-import { isLight, parseHex, toHex } from '@shared/color'
+import { isLight, parseHex } from '@shared/color'
 import type { PickerInit } from '@shared/api'
+import { bgraToRgba, loupeCells, pixelHex } from '@shared/pixels'
 import { LOUPE_SIZE, LOUPE_ZOOM } from '@shared/state'
 import './picker.css'
 
@@ -10,14 +11,28 @@ const loupeLabel = document.getElementById('loupe-label') as HTMLDivElement
 const hint = document.getElementById('hint') as HTMLDivElement
 
 const isMac = navigator.userAgent.includes('Mac')
+/** Extra pixels read around the loupe so it stays filled while the cursor moves. */
+const READ_MARGIN = 8
+
+/** Pixels around the cursor, in RGBA, positioned in display pixels. */
+interface Region {
+  x: number
+  y: number
+  width: number
+  height: number
+  pixels: Uint8ClampedArray<ArrayBuffer>
+  canvas: HTMLCanvasElement
+}
 
 interface PickerState {
   init: PickerInit
-  pixels: Uint8ClampedArray
-  /** Image pixels per CSS pixel. */
+  /** The whole display while frozen; the latest read around the cursor while live. */
+  region: Region | null
+  live: boolean
+  /** Display pixels per CSS pixel. */
   scaleX: number
   scaleY: number
-  /** Cursor in image pixels. */
+  /** Cursor in display pixels. */
   x: number
   y: number
   visible: boolean
@@ -27,26 +42,35 @@ interface PickerState {
 }
 
 let state: PickerState | null = null
+let reading = false
+/** Shown while a live read has not caught up with the cursor yet. */
+let lastHex = '#000000'
+
+function createRegion(
+  canvas: HTMLCanvasElement,
+  x: number,
+  y: number,
+  image: { width: number; height: number; data: Uint8Array },
+  opaque: boolean
+): Region {
+  const pixels = bgraToRgba(image.data, opaque)
+  canvas.width = image.width
+  canvas.height = image.height
+  canvas.getContext('2d')!.putImageData(new ImageData(pixels, image.width), 0, 0)
+  return { x, y, width: image.width, height: image.height, pixels, canvas }
+}
 
 window.picker.onInit((init) => {
-  // Native bitmaps are BGRA; canvases want RGBA.
-  const pixels = new Uint8ClampedArray(init.image.data.length)
-  const source = init.image.data
-  for (let i = 0; i < source.length; i += 4) {
-    pixels[i] = source[i + 2]
-    pixels[i + 1] = source[i + 1]
-    pixels[i + 2] = source[i]
-    pixels[i + 3] = 255
-  }
-  screenCanvas.width = init.image.width
-  screenCanvas.height = init.image.height
-  screenCanvas.getContext('2d')!.putImageData(new ImageData(pixels, init.image.width), 0, 0)
-
-  const scaleX = init.image.width / init.width
-  const scaleY = init.image.height / init.height
+  const live = init.image === null
+  document.body.classList.toggle('live', live)
+  // Frozen, the screen canvas shows the capture and doubles as the loupe's source.
+  const region = init.image ? createRegion(screenCanvas, 0, 0, init.image, true) : null
+  const scaleX = init.pixelWidth / init.width
+  const scaleY = init.pixelHeight / init.height
   state = {
     init,
-    pixels,
+    region,
+    live,
     scaleX,
     scaleY,
     x: init.cursor ? Math.floor(init.cursor.x * scaleX) : 0,
@@ -58,24 +82,58 @@ window.picker.onInit((init) => {
   }
   if (init.cursor) showHint()
   render()
+  if (live) requestAnimationFrame(readLoop)
 })
 
-function colorAt(x: number, y: number): string {
-  if (!state) return '#000000'
-  const index = (y * state.init.image.width + x) * 4
-  const p = state.pixels
-  return toHex({ r: p[index], g: p[index + 1], b: p[index + 2], a: 1 })
+/** Keeps reading the live screen around the cursor, one request at a time. */
+function readLoop(): void {
+  requestAnimationFrame(readLoop)
+  if (!state || !state.visible || reading) return
+  const span = loupeCells(state.size, state.zoom) + READ_MARGIN * 2
+  const x = state.x - Math.floor(span / 2)
+  const y = state.y - Math.floor(span / 2)
+  reading = true
+  window.picker
+    .read(x, y, span, span)
+    .then((image) => {
+      if (!state || !image) return
+      state.region = createRegion(
+        state.region?.canvas ?? document.createElement('canvas'),
+        x,
+        y,
+        image,
+        false
+      )
+      render()
+    })
+    .catch((error) => console.error('Reading the screen failed', error))
+    .finally(() => {
+      reading = false
+    })
+}
+
+function colorAt(x: number, y: number): string | null {
+  const region = state?.region
+  return region ? pixelHex(region.pixels, region.width, x - region.x, y - region.y) : null
+}
+
+/** The color under the cursor right now; live overlays read the screen again for it. */
+async function currentColor(): Promise<string | null> {
+  if (!state) return null
+  if (!state.live) return colorAt(state.x, state.y)
+  const image = await window.picker.read(state.x, state.y, 1, 1)
+  return image ? pixelHex(bgraToRgba(image.data, false), 1, 0, 0) : null
 }
 
 function render(): void {
-  if (!state || !state.visible) {
+  const region = state?.region
+  if (!state || !state.visible || !region) {
     loupe.hidden = true
     return
   }
   const { size, zoom, x, y, scaleX, scaleY } = state
   const dpr = window.devicePixelRatio || 1
-  // An odd number of cells keeps the picked pixel in the middle.
-  const cells = Math.max(3, Math.floor(size / zoom) | 1)
+  const cells = loupeCells(size, zoom)
   const cellSize = size / cells
   const half = Math.floor(cells / 2)
 
@@ -90,7 +148,17 @@ function render(): void {
   ctx.fillStyle = '#111'
   ctx.fillRect(0, 0, size, size)
   ctx.imageSmoothingEnabled = false
-  ctx.drawImage(screenCanvas, x - half, y - half, cells, cells, 0, 0, size, size)
+  ctx.drawImage(
+    region.canvas,
+    x - half - region.x,
+    y - half - region.y,
+    cells,
+    cells,
+    0,
+    0,
+    size,
+    size
+  )
 
   if (cellSize >= 6) {
     ctx.strokeStyle = 'rgba(128, 128, 128, 0.22)'
@@ -106,7 +174,8 @@ function render(): void {
     ctx.stroke()
   }
 
-  const hex = colorAt(x, y)
+  const hex = colorAt(x, y) ?? lastHex
+  lastHex = hex
   const center = half * cellSize
   ctx.lineWidth = 2
   ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)'
@@ -122,8 +191,8 @@ function render(): void {
 
 function moveTo(x: number, y: number): void {
   if (!state) return
-  state.x = Math.min(Math.max(0, Math.round(x)), state.init.image.width - 1)
-  state.y = Math.min(Math.max(0, Math.round(y)), state.init.image.height - 1)
+  state.x = Math.min(Math.max(0, Math.round(x)), state.init.pixelWidth - 1)
+  state.y = Math.min(Math.max(0, Math.round(y)), state.init.pixelHeight - 1)
   state.visible = true
   render()
 }
@@ -136,9 +205,11 @@ function resize(sizeDelta: number, zoomDelta: number): void {
   window.picker.setLoupe(state.size, state.zoom)
 }
 
-function pick(keepOpen: boolean): void {
+async function pick(keepOpen: boolean): Promise<void> {
   if (!state || !state.visible) return
-  window.picker.pick(colorAt(state.x, state.y), keepOpen)
+  const hex = await currentColor()
+  if (!hex || !state) return
+  window.picker.pick(hex, keepOpen)
   if (keepOpen) {
     state.picked++
     loupe.classList.remove('flash')
@@ -179,7 +250,7 @@ document.addEventListener('mouseleave', () => {
 window.addEventListener('mousedown', (event) => {
   event.preventDefault()
   if (event.button === 2) window.picker.cancel()
-  else if (event.button === 0) pick(event.shiftKey || event.metaKey || event.ctrlKey)
+  else if (event.button === 0) void pick(event.shiftKey || event.metaKey || event.ctrlKey)
 })
 window.addEventListener('contextmenu', (event) => event.preventDefault())
 
@@ -204,7 +275,7 @@ window.addEventListener('keydown', (event) => {
     case 'Enter':
     case 'NumpadEnter':
     case 'Space':
-      pick(event.shiftKey)
+      void pick(event.shiftKey)
       break
     case 'ArrowLeft':
       moveTo(state.x - step, state.y)

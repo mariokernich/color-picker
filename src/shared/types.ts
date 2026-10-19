@@ -22,6 +22,8 @@ export interface Settings {
   popoverShortcut: string
   trayClickAction: TrayClickAction
   copyOnPick: boolean
+  /** The picker shows a still capture instead of the live screen. */
+  freezeScreen: boolean
   historyLimit: number
   loupeSize: number
   loupeZoom: number

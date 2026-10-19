@@ -43,6 +43,13 @@ export function SettingsView() {
           <Row label="Copy picked colors" hint="Put the picked color on the clipboard">
             <Toggle label="Copy picked colors" checked={settings.copyOnPick} onChange={(copyOnPick) => set({ copyOnPick })} />
           </Row>
+          <Row label="Freeze screen while picking" hint="Pick from a still image, e.g. hover effects">
+            <Toggle
+              label="Freeze screen while picking"
+              checked={settings.freezeScreen}
+              onChange={(freezeScreen) => set({ freezeScreen })}
+            />
+          </Row>
           <Row label={`Clicking the ${trayName}`}>
             <Segmented
               label={`Clicking the ${trayName}`}

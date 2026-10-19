@@ -1,10 +1,15 @@
 import { BrowserWindow, Display, app, desktopCapturer, ipcMain, screen } from 'electron'
-import { IPC, PickerInit } from '../shared/api'
+import { IPC, PickerImage, PickerInit } from '../shared/api'
+import { pixelSize, sampler } from './sampler'
 import { loadRenderer, preloadPath } from './windows'
 
 const isMac = process.platform === 'darwin'
+/** Largest region an overlay may read at once, in pixels per side. */
+const MAX_READ = 256
 
 interface PickerOptions {
+  /** Show a still capture instead of the live screen. */
+  freeze: () => boolean
   loupe: () => { size: number; zoom: number }
   onLoupeChange: (size: number, zoom: number) => void
   onPick: (hex: string) => void
@@ -17,15 +22,22 @@ interface Capture {
   image: Electron.NativeImage
 }
 
+interface Overlay {
+  window: BrowserWindow
+  display: Display
+}
+
 /**
- * Screen color picker. It captures every display, then covers each one with a borderless
- * overlay showing the frozen capture plus a magnifying loupe. Reading pixels from the
- * capture keeps picking exact and works the same on macOS and Windows.
+ * Screen color picker. It covers every display with a borderless overlay that shows a
+ * magnifying loupe. Live, the overlay is transparent and reads the pixels below the cursor from
+ * the native sampler. Frozen (by setting, or when live sampling is not available), it captures
+ * every display first and shows that still image. Both read exact pixels.
  */
 export class Picker {
-  private windows: BrowserWindow[] = []
+  private overlays: Overlay[] = []
   private starting = false
   private picked = false
+  private live = false
 
   constructor(private readonly options: PickerOptions) {
     ipcMain.on(IPC.pickerPick, (_event, hex: string, keepOpen: boolean) => {
@@ -41,10 +53,25 @@ export class Picker {
     ipcMain.on(IPC.pickerLoupe, (_event, size: number, zoom: number) => {
       this.options.onLoupeChange(size, zoom)
     })
+    ipcMain.handle(
+      IPC.pickerRead,
+      (event, x: number, y: number, width: number, height: number): PickerImage | null => {
+        const overlay = this.overlays.find((item) => item.window.webContents === event.sender)
+        const valid =
+          [x, y, width, height].every(Number.isInteger) &&
+          width > 0 &&
+          height > 0 &&
+          width <= MAX_READ &&
+          height <= MAX_READ
+        if (!overlay || !this.live || !valid) return null
+        const data = sampler.read(overlay.display, x, y, width, height)
+        return data ? { width, height, data } : null
+      }
+    )
   }
 
   get isActive(): boolean {
-    return this.starting || this.windows.length > 0
+    return this.starting || this.overlays.length > 0
   }
 
   async start(): Promise<void> {
@@ -52,35 +79,50 @@ export class Picker {
     this.starting = true
     this.picked = false
     try {
-      const captures = await captureDisplays()
-      if (!captures.length) throw new Error('Screen capture returned no images.')
+      const displays = screen.getAllDisplays()
+      this.live = !this.options.freeze() && (await sampler.start(displays))
+      const captures: Capture[] = this.live ? [] : await captureDisplays(displays)
+      if (!this.live && !captures.length) throw new Error('Screen capture returned no images.')
       const cursor = screen.getCursorScreenPoint()
       const cursorDisplay = screen.getDisplayNearestPoint(cursor)
-      this.windows = captures.map((capture) =>
-        this.createOverlay(capture, capture.display.id === cursorDisplay.id ? cursor : null)
-      )
+      const cursorOn = (display: Display): Electron.Point | null =>
+        display.id === cursorDisplay.id ? cursor : null
+      this.overlays = this.live
+        ? displays.map((display) => this.createOverlay(display, null, cursorOn(display)))
+        : captures.map((capture) =>
+            this.createOverlay(capture.display, capture.image, cursorOn(capture.display))
+          )
     } finally {
       this.starting = false
     }
   }
 
   close(): void {
-    const windows = this.windows
-    if (!windows.length) return
-    this.windows = []
-    windows.forEach((window) => {
+    const overlays = this.overlays
+    if (!overlays.length) return
+    this.overlays = []
+    if (this.live) sampler.stop()
+    overlays.forEach(({ window }) => {
       if (!window.isDestroyed()) window.destroy()
     })
     this.options.onClose(this.picked)
   }
 
-  private createOverlay(capture: Capture, cursor: Electron.Point | null): BrowserWindow {
-    const { bounds } = capture.display
+  /** `image` is the frozen capture of the display, `null` for a live overlay. */
+  private createOverlay(
+    display: Display,
+    image: Electron.NativeImage | null,
+    cursor: Electron.Point | null
+  ): Overlay {
+    const { bounds } = display
     const window = new BrowserWindow({
       ...bounds,
       show: false,
       frame: false,
-      backgroundColor: '#000000',
+      // Live overlays only draw the loupe; the screen shows through.
+      ...(image
+        ? { backgroundColor: '#000000' }
+        : { transparent: true, backgroundColor: '#00000000' }),
       resizable: false,
       movable: false,
       minimizable: false,
@@ -102,14 +144,19 @@ export class Picker {
     // Above the menu bar, the Dock and full screen apps.
     window.setAlwaysOnTop(true, 'screen-saver')
     if (isMac) window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
+    // Keeps the overlay out of the live reads on Windows (WDA_EXCLUDEFROMCAPTURE). On macOS the
+    // sampler's stream filter leaves out all of the app's windows.
+    if (!image) window.setContentProtection(true)
     window.setBounds(bounds)
 
-    const size = capture.image.getSize()
+    const pixels = image ? image.getSize() : pixelSize(display)
     const loupe = this.options.loupe()
     const init: PickerInit = {
       width: bounds.width,
       height: bounds.height,
-      image: { width: size.width, height: size.height, data: capture.image.toBitmap() },
+      pixelWidth: pixels.width,
+      pixelHeight: pixels.height,
+      image: image ? { width: pixels.width, height: pixels.height, data: image.toBitmap() } : null,
       cursor: cursor ? { x: cursor.x - bounds.x, y: cursor.y - bounds.y } : null,
       loupeSize: loupe.size,
       loupeZoom: loupe.zoom
@@ -126,10 +173,10 @@ export class Picker {
     })
     // Losing an overlay (e.g. display unplugged) ends the session.
     window.on('closed', () => {
-      if (this.windows.includes(window)) this.close()
+      if (this.overlays.some((overlay) => overlay.window === window)) this.close()
     })
     loadRenderer(window, 'picker')
-    return window
+    return { window, display }
   }
 }
 
@@ -137,15 +184,10 @@ export class Picker {
  * Captures each display at its native pixel size. Displays with different sizes are captured
  * in separate passes so no thumbnail gets resampled, which would blend neighboring pixels.
  */
-async function captureDisplays(): Promise<Capture[]> {
-  const displays = screen.getAllDisplays()
-  const physicalSize = (display: Display): Electron.Size => ({
-    width: Math.round(display.size.width * display.scaleFactor),
-    height: Math.round(display.size.height * display.scaleFactor)
-  })
+async function captureDisplays(displays: Display[]): Promise<Capture[]> {
   const sizes = new Map<string, Electron.Size>()
   displays.forEach((display) => {
-    const size = physicalSize(display)
+    const size = pixelSize(display)
     sizes.set(`${size.width}x${size.height}`, size)
   })
 
@@ -153,7 +195,7 @@ async function captureDisplays(): Promise<Capture[]> {
   for (const [key, thumbnailSize] of sizes) {
     const sources = await desktopCapturer.getSources({ types: ['screen'], thumbnailSize })
     displays.forEach((display, index) => {
-      const size = physicalSize(display)
+      const size = pixelSize(display)
       if (`${size.width}x${size.height}` !== key) return
       // `display_id` can be empty on some Linux setups; fall back to enumeration order.
       const source = sources.find((item) => item.display_id === String(display.id)) ?? sources[index]

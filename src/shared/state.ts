@@ -8,6 +8,7 @@ export const DEFAULT_SETTINGS: Settings = {
   popoverShortcut: 'CommandOrControl+Alt+Shift+M',
   trayClickAction: 'popover',
   copyOnPick: true,
+  freezeScreen: false,
   historyLimit: 200,
   loupeSize: 168,
   loupeZoom: 12,

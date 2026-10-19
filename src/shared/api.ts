@@ -20,7 +20,8 @@ export const IPC = {
   pickerPick: 'picker:pick',
   pickerCancel: 'picker:cancel',
   pickerFocus: 'picker:focus',
-  pickerLoupe: 'picker:loupe'
+  pickerLoupe: 'picker:loupe',
+  pickerRead: 'picker:read'
 } as const
 
 export type ShortcutKind = 'picker' | 'popover'
@@ -63,7 +64,11 @@ export interface PickerInit {
   /** Window size in CSS pixels. */
   width: number
   height: number
-  image: PickerImage
+  /** Display size in physical pixels, the coordinates for picking. */
+  pixelWidth: number
+  pixelHeight: number
+  /** Frozen capture of the display, or `null` when the overlay reads the screen live. */
+  image: PickerImage | null
   /** Cursor position in CSS pixels relative to this window, when the cursor is on its display. */
   cursor: { x: number; y: number } | null
   loupeSize: number
@@ -77,4 +82,9 @@ export interface PickerApi {
   cancel(): void
   focus(): void
   setLoupe(size: number, zoom: number): void
+  /**
+   * Reads a region of the live screen in display pixels; pixels outside the display have alpha 0.
+   * Resolves to `null` for frozen overlays or before the first frame is available.
+   */
+  read(x: number, y: number, width: number, height: number): Promise<PickerImage | null>
 }

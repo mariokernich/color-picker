@@ -17,6 +17,7 @@ npm run typecheck      # main + renderer
 npm test               # Vitest unit tests (src/**/*.test.ts)
 npm run build          # electron-vite build to out/
 npm run icons          # regenerate all icons
+npm run native         # rebuild the native screen sampler (macOS/Windows; postinstall does it too)
 npm run dist:mas | dist:mas-dev | dist:appx   # store packages
 ```
 
@@ -31,8 +32,9 @@ signed or notarized. Public releases get a signed and notarized macOS build from
 
 `src/shared` holds pure, tested logic (color math, formats, contrast, the state reducer, export).
 The main process (`src/main`) owns the state (`store.ts` + `shared/state.ts` reducer), the tray,
-the popover window, global shortcuts and the picker (`picker.ts`: capture every display with
-`desktopCapturer`, show full-screen overlays with a loupe). Renderers talk to main only through the
+the popover window, global shortcuts and the picker (`picker.ts`: transparent full-screen overlays
+with a loupe that read live pixels from the native sampler in `native/sampler` via `sampler.ts`;
+frozen `desktopCapturer` captures by setting or as fallback). Renderers talk to main only through the
 typed, sandboxed preload bridges (`src/preload`, types in `src/shared/api.ts`). The popover UI is
 React (`src/renderer/src`), the picker overlay is plain TypeScript + canvas
 (`src/renderer/src/picker`). In a plain browser the renderer falls back to an in-memory mock API
