@@ -10,6 +10,55 @@ Legend: 🧑 = needs the owner (accounts, money, legal decisions) · 🤖 = an a
 🌐 = an assistant with browser access (e.g. Claude in Chrome) can do it in the owner's signed-in
 browser, with the owner confirming.
 
+## 0. Next step: publish release `v0.1.1` (🤖 on the owner's Mac, 🧑 confirms)
+
+`main` is at version **0.1.1** (live picker, merged in PR #1). CI built the draft release
+**`v0.1.1-build.6`** with all packages, but its macOS DMG/ZIP are unsigned, so they must not be
+published (see `CLAUDE.md`). `v0.1.0` was signed and notarized; `v0.1.1` must be too.
+
+1. **Quick hardware check first** (the live picker has never run on real macOS/Windows): run the
+   "Live picker" and "Color accuracy (live)" items of the macOS checklist in section 2 with
+   `npm install && npm run dev`. `npm install` builds the native sampler (needs the Xcode Command
+   Line Tools; without them it only warns and the picker freezes the screen). If live picking
+   fails, fix it on a `fix/*` branch first; the release waits.
+2. **Signed macOS build** on `main` (Developer ID key is in the owner's login keychain, App Store
+   Connect API key in `~/.appstoreconnect/private_keys/`; ask the owner for key ID and issuer ID):
+   ```bash
+   git checkout main && git pull
+   npm ci
+   APPLE_API_KEY=~/.appstoreconnect/private_keys/AuthKey_<KEYID>.p8 \
+   APPLE_API_KEY_ID=<KEYID> APPLE_API_ISSUER=<issuer id> \
+   npm run dist:mac-release
+   xcrun notarytool submit dist/ChipDeck-0.1.1.dmg --key <p8> --key-id <KEYID> --issuer <issuer id> --wait
+   xcrun stapler staple dist/ChipDeck-0.1.1.dmg
+   spctl -a -vvv -t open --context context:primary-signature dist/ChipDeck-0.1.1.dmg
+   ```
+   `spctl` must report "Notarized Developer ID". Also check that the native sampler is inside and
+   signed: `codesign -dv "dist/mac-universal/ChipDeck.app/Contents/Resources/native/sampler.node"`
+   and `lipo -archs` on the same file (expects `x86_64 arm64`).
+3. **Publish on GitHub** (🌐 Claude in Chrome or 🧑; `gh` works too if it is installed and logged
+   in): open draft `v0.1.1-build.6` → edit:
+   - tag `v0.1.1` (create on publish, target `main`), title `ChipDeck 0.1.1`
+   - delete the unsigned `ChipDeck-0.1.1.dmg` / `ChipDeck-0.1.1-universal-mac.zip` (or however
+     the CI assets are named), upload the signed DMG and ZIP from `dist/`
+   - keep the Windows NSIS installers (x64, arm64); the `.appx` files are for the Store only and
+     can be removed from the public release
+   - release notes:
+     ```markdown
+     ## ChipDeck 0.1.1
+
+     ### New
+     - **Live picker:** the screen no longer freezes while you pick. Videos and animations keep
+       running under the loupe, and every click picks the pixel as it is right now.
+     - **Freeze screen while picking** (Settings): pick from a still image instead, e.g. for
+       hover effects or open menus.
+
+     ### Improved
+     - macOS: picked colors are converted to sRGB, also on P3 (Retina) displays.
+     ```
+     Keep the sRGB line only if step 1 confirmed the values match Digital Color Meter.
+   - publish, then update "Public release" in section 1 and delete old drafts (section 7).
+
 ## 1. Current state
 
 ### App (on `main`)
