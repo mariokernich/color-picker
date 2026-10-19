@@ -10,19 +10,20 @@ Legend: 🧑 = needs the owner (accounts, money, legal decisions) · 🤖 = an a
 🌐 = an assistant with browser access (e.g. Claude in Chrome) can do it in the owner's signed-in
 browser, with the owner confirming.
 
-## 0. Next step: publish release `v0.1.1` (🤖 on the owner's Mac, 🧑 confirms)
+## 0. Release `v0.1.1` ✅ (2026-10-19)
 
-`main` is at version **0.1.1** (live picker, merged in PR #1). CI built the draft release
-**`v0.1.1-build.6`** with all packages, but its macOS DMG/ZIP are unsigned, so they must not be
-published (see `CLAUDE.md`). `v0.1.0` was signed and notarized; `v0.1.1` must be too.
+`v0.1.1` (live picker, PR #1) is public and marked "Latest":
+https://github.com/mariokernich/color-picker/releases/tag/v0.1.1. It was made from CI draft
+`v0.1.1-build.6` like this; repeat the steps for the next public release:
 
-1. **Quick hardware check first** (the live picker has never run on real macOS/Windows): run the
-   "Live picker" and "Color accuracy (live)" items of the macOS checklist in section 2 with
-   `npm install && npm run dev`. `npm install` builds the native sampler (needs the Xcode Command
-   Line Tools; without them it only warns and the picker freezes the screen). If live picking
-   fails, fix it on a `fix/*` branch first; the release waits.
+1. **Hardware check:** the owner confirmed "Live picker" and "Color accuracy (live)" of the macOS
+   checklist (section 2) with `npm install && npm run dev`. `npm install` builds the native sampler
+   (needs the Xcode Command Line Tools; without them it only warns and the picker freezes the
+   screen).
 2. **Signed macOS build** on `main` (Developer ID key is in the owner's login keychain, App Store
-   Connect API key in `~/.appstoreconnect/private_keys/`; ask the owner for key ID and issuer ID):
+   Connect API key in `~/.appstoreconnect/private_keys/`; use the key with the *Developer* role,
+   key ID and issuer ID are on App Store Connect → Users and Access → Integrations →
+   App Store Connect API):
    ```bash
    git checkout main && git pull
    npm ci
@@ -36,28 +37,16 @@ published (see `CLAUDE.md`). `v0.1.0` was signed and notarized; `v0.1.1` must be
    `spctl` must report "Notarized Developer ID". Also check that the native sampler is inside and
    signed: `codesign -dv "dist/mac-universal/ChipDeck.app/Contents/Resources/native/sampler.node"`
    and `lipo -archs` on the same file (expects `x86_64 arm64`).
-3. **Publish on GitHub** (🌐 Claude in Chrome or 🧑; `gh` works too if it is installed and logged
-   in): open draft `v0.1.1-build.6` → edit:
-   - tag `v0.1.1` (create on publish, target `main`), title `ChipDeck 0.1.1`
-   - delete the unsigned `ChipDeck-0.1.1.dmg` / `ChipDeck-0.1.1-universal-mac.zip` (or however
-     the CI assets are named), upload the signed DMG and ZIP from `dist/`
-   - keep the Windows NSIS installers (x64, arm64); the `.appx` files are for the Store only and
-     can be removed from the public release
-   - release notes:
-     ```markdown
-     ## ChipDeck 0.1.1
+3. **Publish on GitHub** with `gh` (or 🌐/🧑 in the browser): in the CI draft
+   `v<version>-build.<run>` delete the unsigned `ChipDeck-<version>.dmg` /
+   `ChipDeck-<version>-universal-mac.zip`, the `.appx` files (Store only) and the combined
+   `ChipDeck-<version>.exe`; upload the signed DMG and ZIP from `dist/`; keep the NSIS installers
+   `-x64.exe` and `-arm64.exe`. Then
+   `gh release edit <draft> --tag v<version> --target <main sha> --title 'ChipDeck <version>'
+   --notes-file <notes> --draft=false --latest`. Release notes: changes first, then the download
+   table and the signing/SmartScreen notes of the previous release.
 
-     ### New
-     - **Live picker:** the screen no longer freezes while you pick. Videos and animations keep
-       running under the loupe, and every click picks the pixel as it is right now.
-     - **Freeze screen while picking** (Settings): pick from a still image instead, e.g. for
-       hover effects or open menus.
-
-     ### Improved
-     - macOS: picked colors are converted to sRGB, also on P3 (Retina) displays.
-     ```
-     Keep the sRGB line only if step 1 confirmed the values match Digital Color Meter.
-   - publish, then update "Public release" in section 1 and delete old drafts (section 7).
+**Next:** legal texts (section 4) and the store submissions (sections 5 and 6).
 
 ## 1. Current state
 
@@ -89,10 +78,11 @@ published (see `CLAUDE.md`). `v0.1.0` was signed and notarized; `v0.1.1` must be
 - CI release builds stay drafts: they are **unsigned** and for testing only. Public releases
   (`v<version>`) get a signed and notarized macOS build from `npm run dist:mac-release` on the
   owner's Mac plus the Windows installers from CI (see `docs/STORE.md`).
-- **Public release `v0.1.0`** (2026-10-18): signed and notarized universal DMG/ZIP, unsigned
-  Windows NSIS installers (x64, arm64) from CI draft `v0.1.0-build.4`. The free download is not
-  mentioned on the website or in the README on purpose.
-- Old CI drafts `v0.1.0-build.1/3/4` can be deleted (see 7.).
+- **Public release `v0.1.1`** (2026-10-19, "Latest"): signed and notarized universal DMG/ZIP,
+  unsigned Windows NSIS installers (x64, arm64) from CI draft `v0.1.1-build.6`. `v0.1.0`
+  (2026-10-18) was built the same way. The free download is not mentioned on the website or in
+  the README on purpose.
+- Old CI drafts `v0.1.0-build.1/3/4/5` can be deleted (see 7.).
 
 ### Website (live)
 
@@ -105,14 +95,14 @@ published (see `CLAUDE.md`). `v0.1.0` was signed and notarized; `v0.1.1` must be
 
 ### Not verified yet
 
-The app has only run in a Linux container (Xvfb): start, popover, picker overlay, pixel-exact
-picking and persistence work there. **It has never run on real macOS or Windows.** The release
-build ran green in CI, but nobody has opened the packages yet. Expect platform issues in step 2.
+On real macOS (owner's Mac, 2026-10-19) the live picker and its color accuracy are confirmed. The
+rest of the macOS checklist and **all of Windows** are still unverified; expect platform issues in
+step 2.
 
 ## 2. Verify on real hardware (🤖 with 🧑 clicking)
 
-Either run from source or install the packages from draft release `v0.1.0-build.3`
-(unsigned: on macOS right-click → Open; on Windows "More info → Run anyway").
+Either run from source or install the packages from release `v0.1.1` (macOS signed and
+notarized; on Windows "More info → Run anyway").
 
 ```bash
 npm install          # .npmrc sets legacy-peer-deps (works around an npm resolver crash)
@@ -127,10 +117,10 @@ macOS checklist:
 - [ ] If permission is denied, the popover shows the "Screen access needed" banner and its button
       opens System Settings.
 - [ ] Overlay covers menu bar and Dock, also on a second display and over full-screen apps.
-- [ ] **Live picker:** a playing video stays live under the loupe; the loupe never shows itself
+- [x] **Live picker:** a playing video stays live under the loupe; the loupe never shows itself
       or the picker overlay (no "loupe in loupe", no darkening); clicking picks the pixel under the
-      cursor, also on a second display and over full-screen apps.
-- [ ] **Color accuracy (live):** compare picked values with *Digital Color Meter* ("Display in
+      cursor, also on a second display and over full-screen apps. _(Owner, 2026-10-19.)_
+- [x] **Color accuracy (live):** compare picked values with *Digital Color Meter* ("Display in
       sRGB") on a P3/Retina display. The sampler converts to sRGB
       (`native/sampler/src/sampler_mac.mm`), so they should match exactly.
 - [ ] **Freeze screen while picking** (Settings): the picker shows a still image again. Compare its
@@ -260,8 +250,10 @@ npm run dist:mas         # dist/mas-universal/<name>-<version>.pkg
 
 ## 7. Housekeeping
 
-- [ ] 🧑/🌐 Delete the outdated draft release `v0.1.0-build.1`
-      (Releases → draft → edit ✏️ → Delete).
+- [ ] 🧑/🤖 Delete the outdated draft releases `v0.1.0-build.1/3/4/5`
+      (`gh release delete <tag> -y`, or Releases → draft → edit ✏️ → Delete).
+- [ ] 🤖 Commit the `package-lock.json` update that `npm install` produces since the native
+      sampler's `postinstall` (`"hasInstallScript": true`); `npm ci` and builds work without it.
 - [ ] 🧑/🌐 Delete the branch `feat/color-picker-app` (Branches page).
 - [ ] 🧑 Decide: should `release.yml` delete older drafts automatically (e.g. keep the newest 3)?
       Otherwise every push to `main` adds a draft. 🤖 can add a cleanup step using `gh release
