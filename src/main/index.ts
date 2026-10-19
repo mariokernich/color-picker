@@ -67,6 +67,7 @@ function main(): void {
     isMac ? systemPreferences.getMediaAccessStatus('screen') : 'granted'
 
   const picker = new Picker({
+    freeze: () => store.state.settings.freezeScreen,
     loupe: () => ({ size: store.state.settings.loupeSize, zoom: store.state.settings.loupeZoom }),
     onLoupeChange: (size, zoom) => {
       const clamp = (value: number, range: { min: number; max: number }): number =>
