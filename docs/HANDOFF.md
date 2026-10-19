@@ -82,7 +82,7 @@ https://github.com/mariokernich/color-picker/releases/tag/v0.1.1. It was made fr
   unsigned Windows NSIS installers (x64, arm64) from CI draft `v0.1.1-build.6`. `v0.1.0`
   (2026-10-18) was built the same way. The free download is not mentioned on the website or in
   the README on purpose.
-- Old CI drafts `v0.1.0-build.1/3/4/5` can be deleted (see 7.).
+- No CI drafts are left; the next push to `main` creates a new one.
 
 ### Website (live)
 
@@ -250,8 +250,7 @@ npm run dist:mas         # dist/mas-universal/<name>-<version>.pkg
 
 ## 7. Housekeeping
 
-- [ ] 🧑/🤖 Delete the outdated draft releases `v0.1.0-build.1/3/4/5`
-      (`gh release delete <tag> -y`, or Releases → draft → edit ✏️ → Delete).
+- [x] Delete the outdated draft releases `v0.1.0-build.1/3/4/5` (done 2026-10-19).
 - [ ] 🤖 Commit the `package-lock.json` update that `npm install` produces since the native
       sampler's `postinstall` (`"hasInstallScript": true`); `npm ci` and builds work without it.
 - [ ] 🧑/🌐 Delete the branch `feat/color-picker-app` (Branches page).
