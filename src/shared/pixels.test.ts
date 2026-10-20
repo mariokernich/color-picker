@@ -41,13 +41,18 @@ describe('loupeCells', () => {
 })
 
 describe('cursorSpeed', () => {
-  it('keeps full speed up to the default zoom', () => {
-    expect(cursorSpeed(4)).toBe(1)
-    expect(cursorSpeed(12)).toBe(1)
+  it('keeps full speed up to the default loupe', () => {
+    expect(cursorSpeed(168, 12)).toBe(1)
+    expect(cursorSpeed(96, 4)).toBe(1)
+  })
+
+  it('slows down the bigger the loupe gets', () => {
+    expect(cursorSpeed(336, 12)).toBe(0.5)
+    expect(cursorSpeed(320, 12)).toBe(0.525)
   })
 
   it('slows down the further the loupe zooms in', () => {
-    expect(cursorSpeed(24)).toBe(0.5)
-    expect(cursorSpeed(32)).toBe(0.375)
+    expect(cursorSpeed(168, 24)).toBe(0.5)
+    expect(cursorSpeed(336, 24)).toBe(0.25)
   })
 })

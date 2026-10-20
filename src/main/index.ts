@@ -15,7 +15,7 @@ import { parseHex } from '../shared/color'
 import { EXPORT_FORMATS, exportPalette, slugify } from '../shared/export'
 import { formatColor } from '../shared/formats'
 import { PRODUCT } from '../shared/product'
-import { Action, LOUPE_SIZE } from '../shared/state'
+import { Action } from '../shared/state'
 import type { AppData, CollectionId, ExportFormat, PlatformInfo, ScreenAccess } from '../shared/types'
 import { Picker } from './picker'
 import { Shortcuts } from './shortcuts'
@@ -68,11 +68,6 @@ function main(): void {
 
   const picker = new Picker({
     freeze: () => store.state.settings.freezeScreen,
-    loupeSize: () => store.state.settings.loupeSize,
-    onLoupeSizeChange: (size) => {
-      const loupeSize = Math.min(LOUPE_SIZE.max, Math.max(LOUPE_SIZE.min, Math.round(size)))
-      store.dispatch({ type: 'updateSettings', patch: { loupeSize } })
-    },
     onPick: (hex) => {
       const color = parseHex(hex)
       if (!color) return

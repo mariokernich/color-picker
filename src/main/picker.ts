@@ -10,8 +10,6 @@ const MAX_READ = 256
 interface PickerOptions {
   /** Show a still capture instead of the live screen. */
   freeze: () => boolean
-  loupeSize: () => number
-  onLoupeSizeChange: (size: number) => void
   onPick: (hex: string) => void
   /** Called once all overlays are closed; `picked` tells whether at least one color was picked. */
   onClose: (picked: boolean) => void
@@ -50,7 +48,6 @@ export class Picker {
       const window = BrowserWindow.fromWebContents(event.sender)
       if (window && !window.isFocused()) window.focus()
     })
-    ipcMain.on(IPC.pickerLoupe, (_event, size: number) => this.options.onLoupeSizeChange(size))
     ipcMain.on(IPC.pickerMoveCursor, (event, x: number, y: number) => {
       const overlay = this.overlays.find((item) => item.window.webContents === event.sender)
       if (!overlay || !Number.isFinite(x) || !Number.isFinite(y)) return
@@ -160,7 +157,6 @@ export class Picker {
       pixelHeight: pixels.height,
       image: image ? { width: pixels.width, height: pixels.height, data: image.toBitmap() } : null,
       cursor: cursor ? { x: cursor.x - bounds.x, y: cursor.y - bounds.y } : null,
-      loupeSize: this.options.loupeSize(),
       canMoveCursor: sampler.canMoveCursor()
     }
     window.webContents.once('did-finish-load', () => {

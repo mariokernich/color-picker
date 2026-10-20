@@ -20,7 +20,6 @@ export const IPC = {
   pickerPick: 'picker:pick',
   pickerCancel: 'picker:cancel',
   pickerFocus: 'picker:focus',
-  pickerLoupe: 'picker:loupe',
   pickerRead: 'picker:read',
   pickerMoveCursor: 'picker:move-cursor'
 } as const
@@ -72,7 +71,6 @@ export interface PickerInit {
   image: PickerImage | null
   /** Cursor position in CSS pixels relative to this window, when the cursor is on its display. */
   cursor: { x: number; y: number } | null
-  loupeSize: number
   /** The overlay can move the mouse cursor, which slowing it down at high zoom needs. */
   canMoveCursor: boolean
 }
@@ -83,7 +81,6 @@ export interface PickerApi {
   pick(hex: string, keepOpen: boolean): void
   cancel(): void
   focus(): void
-  setLoupeSize(size: number): void
   /** Moves the mouse cursor to a pixel of this overlay's display. */
   moveCursor(x: number, y: number): void
   /**

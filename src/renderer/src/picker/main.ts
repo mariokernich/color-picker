@@ -83,7 +83,7 @@ window.picker.onInit((init) => {
     exactX: x,
     exactY: y,
     visible: init.cursor !== null,
-    size: init.loupeSize,
+    size: LOUPE_SIZE.default,
     zoom: LOUPE_ZOOM.default,
     picked: 0
   }
@@ -211,20 +211,19 @@ function resize(sizeDelta: number, zoomDelta: number): void {
   state.size = Math.min(LOUPE_SIZE.max, Math.max(LOUPE_SIZE.min, state.size + sizeDelta))
   state.zoom = Math.min(LOUPE_ZOOM.max, Math.max(LOUPE_ZOOM.min, state.zoom + zoomDelta))
   render()
-  if (sizeDelta) window.picker.setLoupeSize(state.size)
   updateCursorLock()
 }
 
 const isCursorLocked = (): boolean => document.pointerLockElement !== null
 
 /**
- * Zoomed in beyond the default, the overlay locks the pointer and applies only a share of the
- * mouse movement (see `cursorSpeed`). The system cursor stays where the lock started, so it is
- * moved to the picked pixel when the lock ends.
+ * With a loupe bigger or zoomed in further than the default, the overlay locks the pointer and
+ * applies only a share of the mouse movement (see `cursorSpeed`). The system cursor stays where
+ * the lock started, so it is moved to the picked pixel when the lock ends.
  */
 function updateCursorLock(): void {
   if (!state?.init.canMoveCursor) return
-  const slow = state.visible && cursorSpeed(state.zoom) < 1
+  const slow = state.visible && cursorSpeed(state.size, state.zoom) < 1
   if (slow && !isCursorLocked()) {
     document.body
       .requestPointerLock()
@@ -273,7 +272,7 @@ function showHint(): void {
 window.addEventListener('mousemove', (event) => {
   if (!state) return
   if (isCursorLocked()) {
-    const speed = cursorSpeed(state.zoom)
+    const speed = cursorSpeed(state.size, state.zoom)
     moveTo(
       state.exactX + event.movementX * state.scaleX * speed,
       state.exactY + event.movementY * state.scaleY * speed

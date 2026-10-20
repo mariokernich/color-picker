@@ -25,7 +25,6 @@ export interface Settings {
   /** The picker shows a still capture instead of the live screen. */
   freezeScreen: boolean
   historyLimit: number
-  loupeSize: number
   theme: Theme
   launchAtLogin: boolean
 }
