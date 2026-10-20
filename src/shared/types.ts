@@ -24,6 +24,8 @@ export interface Settings {
   copyOnPick: boolean
   /** The picker shows a still capture instead of the live screen. */
   freezeScreen: boolean
+  /** Colors copied in other apps are added to the history. */
+  watchClipboard: boolean
   historyLimit: number
   theme: Theme
   launchAtLogin: boolean

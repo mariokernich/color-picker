@@ -43,6 +43,13 @@ export function SettingsView() {
           <Row label="Copy picked colors" hint="Put the picked color on the clipboard">
             <Toggle label="Copy picked colors" checked={settings.copyOnPick} onChange={(copyOnPick) => set({ copyOnPick })} />
           </Row>
+          <Row label="Watch clipboard" hint="Add colors copied in other apps to the history">
+            <Toggle
+              label="Watch clipboard"
+              checked={settings.watchClipboard}
+              onChange={(watchClipboard) => set({ watchClipboard })}
+            />
+          </Row>
           <Row label="Freeze screen while picking" hint="Pick from a still image, e.g. hover effects">
             <Toggle
               label="Freeze screen while picking"
