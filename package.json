@@ -1,7 +1,7 @@
 {
   "name": "color-picker",
   "productName": "ChipDeck",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A fast, unobtrusive color picker for macOS and Windows.",
   "author": {
     "name": "Mario Kernich",
