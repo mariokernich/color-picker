@@ -17,6 +17,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
     "test": "vitest run",
     "icons": "node scripts/generate-icons.mjs",
+    "store:screenshots": "npm run build && node scripts/store/screenshots.mjs",
+    "store": "node scripts/store/publish.mjs",
     "native": "node scripts/build-native.mjs",
     "postinstall": "node scripts/build-native.mjs --optional",
     "dist:mac": "npm run build && electron-builder --mac dmg zip",

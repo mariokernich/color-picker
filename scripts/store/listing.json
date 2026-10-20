@@ -1,0 +1,69 @@
+{
+  "appId": "6824296695",
+  "urls": {
+    "support": "https://mariokernich.github.io/color-picker/",
+    "marketing": "https://mariokernich.github.io/color-picker/",
+    "privacy": "https://mariokernich.github.io/color-picker/privacy.html"
+  },
+  "reviewNotes": "ChipDeck is a menu bar app (no Dock icon). Click the icon in the menu bar to open it, then click \"Pick Color\" (or press Cmd+Option+Shift+C) to start the picker.\n\nPicking colors from the screen requires the Screen Recording permission, which macOS asks for the first time \"Pick Color\" is used. Screen contents are only processed in memory to read pixel colors; nothing is stored or sent anywhere. The app has no network access and needs no account.\n\nWhile the loupe is enlarged or zoomed in, the app slows the mouse down (it applies a share of each mouse movement to the hidden cursor) so single pixels are easy to hit. This ends when the picker closes.\n\nThe optional setting \"Watch clipboard\" (Settings, off by default) reads the clipboard after something was copied and adds a copied color code such as #FF8800 to the color history. Nothing is stored except that color, and nothing leaves the Mac.",
+  "locales": {
+    "en-US": {
+      "name": "ChipDeck: Color Picker",
+      "subtitle": "Loupe, palettes & contrast",
+      "promotionalText": "Pick any pixel on any screen with a magnifying loupe and copy it as Hex, RGB, SwiftUI, Tailwind and 13 more formats. Palettes and a WCAG contrast checker included.",
+      "keywords": "eyedropper,hex,rgb,hsl,oklch,palette,loupe,contrast,wcag,swatch,css,tailwind,designer,colour,pipette",
+      "description": "ChipDeck picks any color on your screen: fast, precise and without getting in your way.\n\nPress a shortcut or click the menu bar icon, aim the magnifying loupe at any pixel on any display and click. The color is in your clipboard in exactly the format you need.\n\nPICK\n• Live loupe: videos and animations keep running while you pick\n• Pixel-precise loupe with a zoomed pixel grid, on every display including Retina\n• The bigger the loupe, the slower the mouse, so every single pixel is easy to hit\n• Arrow keys move one pixel at a time\n• Global shortcut that works from any app\n\nCOPY IN 17 FORMATS\nCSS Hex, RGB, HSL and OKLCH, SwiftUI, UIColor, NSColor, Android XML and Compose, Flutter, .NET, Java, Unity, OpenGL and more.\n\nORGANIZE\n• History of every picked color\n• Optional: colors you copy in other apps land in the history too\n• Palettes with drag and drop\n• Export palettes as JSON, CSS, SCSS, Tailwind or GIMP palette\n\nREFINE AND CHECK\n• Color editor with RGB, HSL and HSB values and opacity\n• WCAG 2 contrast checker with AA and AAA results for text and UI components\n\nPRIVATE BY DESIGN\nNo account, no tracking, no network access. Your colors stay on your Mac.\n\nChipDeck lives in the menu bar and has no Dock icon. One-time purchase, no subscription.",
+      "screenshots": [
+        {
+          "title": "Pick <em>any pixel</em> on any screen",
+          "subtitle": "A live magnifying loupe with a pixel grid. The bigger the loupe, the slower the mouse."
+        },
+        {
+          "title": "History and <em>palettes</em>",
+          "subtitle": "Every pick lands in your history. Collect colors in palettes and export them as CSS, Tailwind or JSON."
+        },
+        {
+          "title": "Copy in <em>17 formats</em>",
+          "subtitle": "Hex, RGB, HSL, OKLCH, SwiftUI, Android, Flutter and more. Fine-tune any color in the editor."
+        },
+        {
+          "title": "Check <em>contrast</em> instantly",
+          "subtitle": "WCAG 2 results for normal text, large text and UI components."
+        },
+        {
+          "title": "Lives in your <em>menu bar</em>",
+          "subtitle": "Light and dark mode, a global shortcut and no Dock icon. No account, no tracking."
+        }
+      ]
+    },
+    "de-DE": {
+      "name": "ChipDeck: Farbpipette",
+      "subtitle": "Lupe, Paletten & Kontrast",
+      "promotionalText": "Jedes Pixel auf jedem Bildschirm mit der Lupe aufnehmen und als Hex, RGB, SwiftUI, Tailwind und 13 weitere Formate kopieren. Mit Paletten und WCAG-Kontrastprüfung.",
+      "keywords": "farbpipette,pipette,farbwähler,hex,rgb,hsl,oklch,palette,lupe,kontrast,wcag,css,tailwind,farbe",
+      "description": "ChipDeck nimmt jede Farbe auf deinem Bildschirm auf: schnell, pixelgenau und ohne im Weg zu sein.\n\nKürzel drücken oder auf das Symbol in der Menüleiste klicken, die Lupe auf ein beliebiges Pixel auf einem beliebigen Bildschirm richten und klicken. Die Farbe liegt sofort im gewünschten Format in der Zwischenablage.\n\nAUFNEHMEN\n• Live-Lupe: Videos und Animationen laufen beim Aufnehmen weiter\n• Pixelgenaue Lupe mit vergrößertem Pixelraster, auf jedem Bildschirm inklusive Retina\n• Je größer die Lupe, desto langsamer die Maus, damit jedes einzelne Pixel leicht zu treffen ist\n• Pfeiltasten bewegen um genau ein Pixel\n• Globales Tastenkürzel, das in jeder App funktioniert\n\nKOPIEREN IN 17 FORMATEN\nCSS Hex, RGB, HSL und OKLCH, SwiftUI, UIColor, NSColor, Android XML und Compose, Flutter, .NET, Java, Unity, OpenGL und mehr.\n\nORGANISIEREN\n• Verlauf aller aufgenommenen Farben\n• Optional: Farben, die du in anderen Apps kopierst, landen ebenfalls im Verlauf\n• Paletten mit Drag & Drop\n• Export von Paletten als JSON, CSS, SCSS, Tailwind oder GIMP-Palette\n\nVERFEINERN UND PRÜFEN\n• Farbeditor mit RGB-, HSL- und HSB-Werten und Deckkraft\n• WCAG-2-Kontrastprüfung mit AA- und AAA-Ergebnis für Text und Bedienelemente\n\nPRIVAT VON ANFANG AN\nKein Konto, kein Tracking, kein Netzwerkzugriff. Deine Farben bleiben auf deinem Mac.\n\nChipDeck lebt in der Menüleiste und hat kein Dock-Symbol. Einmalkauf, kein Abo.",
+      "screenshots": [
+        {
+          "title": "<em>Jedes Pixel</em> auf jedem Bildschirm",
+          "subtitle": "Live-Lupe mit Pixelraster. Je größer die Lupe, desto langsamer die Maus."
+        },
+        {
+          "title": "Verlauf und <em>Paletten</em>",
+          "subtitle": "Jede aufgenommene Farbe landet im Verlauf. Sammle Farben in Paletten und exportiere sie als CSS, Tailwind oder JSON."
+        },
+        {
+          "title": "Kopieren in <em>17 Formaten</em>",
+          "subtitle": "Hex, RGB, HSL, OKLCH, SwiftUI, Android, Flutter und mehr. Feinschliff im Farbeditor."
+        },
+        {
+          "title": "<em>Kontrast</em> sofort prüfen",
+          "subtitle": "WCAG-2-Ergebnis für normalen Text, großen Text und Bedienelemente."
+        },
+        {
+          "title": "Wohnt in der <em>Menüleiste</em>",
+          "subtitle": "Hell und dunkel, globales Tastenkürzel, kein Dock-Symbol. Kein Konto, kein Tracking."
+        }
+      ]
+    }
+  }
+}
