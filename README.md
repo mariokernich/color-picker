@@ -10,7 +10,8 @@ copies colors in the format you need.
 
 - **Picker with loupe**: global shortcut, pixel-precise loupe, arrow keys for 1 px / 10 px steps,
   `+`/`-` to resize, `Alt` `+`/`-` (or the scroll wheel) to zoom, `Shift`-click to pick several colors in one go.
-  Works across multiple displays and HiDPI screens.
+  Every pick starts at the default zoom; zoomed in further, the mouse slows down so single pixels
+  stay easy to hit. Works across multiple displays and HiDPI screens.
 - **History & palettes**: every pick lands in the history and is copied to the clipboard. Palettes
   can collect picked colors automatically, and colors can be dragged between them (hold `Alt` to copy).
   Palettes export as JSON, CSS and SCSS variables, a Tailwind config or a GIMP/Inkscape palette.

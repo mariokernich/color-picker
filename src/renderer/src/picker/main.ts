@@ -1,6 +1,6 @@
 import { isLight, parseHex } from '@shared/color'
 import type { PickerInit } from '@shared/api'
-import { bgraToRgba, loupeCells, pixelHex } from '@shared/pixels'
+import { bgraToRgba, cursorSpeed, loupeCells, pixelHex } from '@shared/pixels'
 import { LOUPE_SIZE, LOUPE_ZOOM } from '@shared/state'
 import './picker.css'
 
@@ -35,6 +35,9 @@ interface PickerState {
   /** Cursor in display pixels. */
   x: number
   y: number
+  /** Cursor before rounding; the slowed-down cursor moves by fractions of a pixel. */
+  exactX: number
+  exactY: number
   visible: boolean
   size: number
   zoom: number
@@ -67,17 +70,21 @@ window.picker.onInit((init) => {
   const region = init.image ? createRegion(screenCanvas, 0, 0, init.image, true) : null
   const scaleX = init.pixelWidth / init.width
   const scaleY = init.pixelHeight / init.height
+  const x = init.cursor ? Math.floor(init.cursor.x * scaleX) : 0
+  const y = init.cursor ? Math.floor(init.cursor.y * scaleY) : 0
   state = {
     init,
     region,
     live,
     scaleX,
     scaleY,
-    x: init.cursor ? Math.floor(init.cursor.x * scaleX) : 0,
-    y: init.cursor ? Math.floor(init.cursor.y * scaleY) : 0,
+    x,
+    y,
+    exactX: x,
+    exactY: y,
     visible: init.cursor !== null,
     size: init.loupeSize,
-    zoom: init.loupeZoom,
+    zoom: LOUPE_ZOOM.default,
     picked: 0
   }
   if (init.cursor) showHint()
@@ -191,8 +198,10 @@ function render(): void {
 
 function moveTo(x: number, y: number): void {
   if (!state) return
-  state.x = Math.min(Math.max(0, Math.round(x)), state.init.pixelWidth - 1)
-  state.y = Math.min(Math.max(0, Math.round(y)), state.init.pixelHeight - 1)
+  state.exactX = Math.min(Math.max(0, x), state.init.pixelWidth - 1)
+  state.exactY = Math.min(Math.max(0, y), state.init.pixelHeight - 1)
+  state.x = Math.round(state.exactX)
+  state.y = Math.round(state.exactY)
   state.visible = true
   render()
 }
@@ -202,13 +211,39 @@ function resize(sizeDelta: number, zoomDelta: number): void {
   state.size = Math.min(LOUPE_SIZE.max, Math.max(LOUPE_SIZE.min, state.size + sizeDelta))
   state.zoom = Math.min(LOUPE_ZOOM.max, Math.max(LOUPE_ZOOM.min, state.zoom + zoomDelta))
   render()
-  window.picker.setLoupe(state.size, state.zoom)
+  if (sizeDelta) window.picker.setLoupeSize(state.size)
+  updateCursorLock()
 }
+
+const isCursorLocked = (): boolean => document.pointerLockElement !== null
+
+/**
+ * Zoomed in beyond the default, the overlay locks the pointer and applies only a share of the
+ * mouse movement (see `cursorSpeed`). The system cursor stays where the lock started, so it is
+ * moved to the picked pixel when the lock ends.
+ */
+function updateCursorLock(): void {
+  if (!state?.init.canMoveCursor) return
+  const slow = state.visible && cursorSpeed(state.zoom) < 1
+  if (slow && !isCursorLocked()) {
+    document.body
+      .requestPointerLock()
+      .catch((error) => console.warn('Slowing down the cursor is not available', error))
+  } else if (!slow && isCursorLocked()) {
+    document.exitPointerLock()
+  }
+}
+
+document.addEventListener('pointerlockchange', () => {
+  if (state && !isCursorLocked()) window.picker.moveCursor(state.x, state.y)
+})
 
 async function pick(keepOpen: boolean): Promise<void> {
   if (!state || !state.visible) return
   const hex = await currentColor()
   if (!hex || !state) return
+  // Closing ends the lock without moving the cursor along.
+  if (!keepOpen && isCursorLocked()) window.picker.moveCursor(state.x, state.y)
   window.picker.pick(hex, keepOpen)
   if (keepOpen) {
     state.picked++
@@ -237,7 +272,15 @@ function showHint(): void {
 
 window.addEventListener('mousemove', (event) => {
   if (!state) return
-  moveTo(event.clientX * state.scaleX, event.clientY * state.scaleY)
+  if (isCursorLocked()) {
+    const speed = cursorSpeed(state.zoom)
+    moveTo(
+      state.exactX + event.movementX * state.scaleX * speed,
+      state.exactY + event.movementY * state.scaleY * speed
+    )
+  } else {
+    moveTo(event.clientX * state.scaleX, event.clientY * state.scaleY)
+  }
 })
 
 window.addEventListener('mouseenter', () => window.picker.focus())

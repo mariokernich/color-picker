@@ -26,7 +26,6 @@ export interface Settings {
   freezeScreen: boolean
   historyLimit: number
   loupeSize: number
-  loupeZoom: number
   theme: Theme
   launchAtLogin: boolean
 }

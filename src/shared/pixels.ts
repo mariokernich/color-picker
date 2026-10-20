@@ -1,4 +1,5 @@
 import { toHex } from './color'
+import { LOUPE_ZOOM } from './state'
 
 /**
  * Converts native BGRA pixels to the RGBA order canvases use. `opaque` ignores the source alpha,
@@ -32,4 +33,12 @@ export function pixelHex(
 /** Pixels per side shown in the loupe: odd, so the picked pixel sits in the middle. */
 export function loupeCells(size: number, zoom: number): number {
   return Math.max(3, Math.floor(size / zoom) | 1)
+}
+
+/**
+ * Share of the mouse movement the picker applies at a zoom: zoomed in beyond the default, the
+ * cursor slows down so the loupe keeps moving at the same speed and single pixels stay hittable.
+ */
+export function cursorSpeed(zoom: number): number {
+  return Math.min(1, LOUPE_ZOOM.default / zoom)
 }

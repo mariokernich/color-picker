@@ -21,7 +21,8 @@ export const IPC = {
   pickerCancel: 'picker:cancel',
   pickerFocus: 'picker:focus',
   pickerLoupe: 'picker:loupe',
-  pickerRead: 'picker:read'
+  pickerRead: 'picker:read',
+  pickerMoveCursor: 'picker:move-cursor'
 } as const
 
 export type ShortcutKind = 'picker' | 'popover'
@@ -72,7 +73,8 @@ export interface PickerInit {
   /** Cursor position in CSS pixels relative to this window, when the cursor is on its display. */
   cursor: { x: number; y: number } | null
   loupeSize: number
-  loupeZoom: number
+  /** The overlay can move the mouse cursor, which slowing it down at high zoom needs. */
+  canMoveCursor: boolean
 }
 
 /** Exposed to the picker overlay windows as `window.picker`. */
@@ -81,7 +83,9 @@ export interface PickerApi {
   pick(hex: string, keepOpen: boolean): void
   cancel(): void
   focus(): void
-  setLoupe(size: number, zoom: number): void
+  setLoupeSize(size: number): void
+  /** Moves the mouse cursor to a pixel of this overlay's display. */
+  moveCursor(x: number, y: number): void
   /**
    * Reads a region of the live screen in display pixels; pixels outside the display have alpha 0.
    * Resolves to `null` for frozen overlays or before the first frame is available.

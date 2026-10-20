@@ -270,11 +270,21 @@ Napi::Value Stop(const Napi::CallbackInfo &info) {
   return info.Env().Undefined();
 }
 
+// Moves the mouse cursor to a global point in display points (origin top left of the main display).
+Napi::Value MoveCursor(const Napi::CallbackInfo &info) {
+  CGWarpMouseCursorPosition(CGPointMake(info[0].As<Napi::Number>().DoubleValue(),
+                                        info[1].As<Napi::Number>().DoubleValue()));
+  // Without this, macOS ignores mouse movement for a moment after the warp.
+  CGAssociateMouseAndMouseCursorPosition(true);
+  return info.Env().Undefined();
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   sampleQueue = dispatch_queue_create("de.kernich.colorpicker.sampler", DISPATCH_QUEUE_SERIAL);
   exports.Set("start", Napi::Function::New(env, Start));
   exports.Set("read", Napi::Function::New(env, Read));
   exports.Set("stop", Napi::Function::New(env, Stop));
+  exports.Set("moveCursor", Napi::Function::New(env, MoveCursor));
   return exports;
 }
 

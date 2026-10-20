@@ -113,6 +113,12 @@ describe('migrate', () => {
     expect(data.settings.historyLimit).toBe(200)
   })
 
+  it('drops the zoom older versions stored', () => {
+    const data = migrate({ history: [], palettes: [], settings: { loupeSize: 192, loupeZoom: 32 } })
+    expect(data.settings.loupeSize).toBe(192)
+    expect(data.settings).not.toHaveProperty('loupeZoom')
+  })
+
   it('recovers from garbage', () => {
     expect(migrate(null)).toEqual(createInitialData())
   })
