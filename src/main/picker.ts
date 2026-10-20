@@ -10,8 +10,6 @@ const MAX_READ = 256
 interface PickerOptions {
   /** Show a still capture instead of the live screen. */
   freeze: () => boolean
-  loupe: () => { size: number; zoom: number }
-  onLoupeChange: (size: number, zoom: number) => void
   onPick: (hex: string) => void
   /** Called once all overlays are closed; `picked` tells whether at least one color was picked. */
   onClose: (picked: boolean) => void
@@ -50,8 +48,8 @@ export class Picker {
       const window = BrowserWindow.fromWebContents(event.sender)
       if (window && !window.isFocused()) window.focus()
     })
-    ipcMain.on(IPC.pickerLoupe, (_event, size: number, zoom: number) => {
-      this.options.onLoupeChange(size, zoom)
+    ipcMain.on(IPC.pickerCursorSpeed, (_event, speed: number) => {
+      if (this.overlays.length && Number.isFinite(speed)) sampler.setCursorSpeed(speed)
     })
     ipcMain.handle(
       IPC.pickerRead,
@@ -101,6 +99,7 @@ export class Picker {
     const overlays = this.overlays
     if (!overlays.length) return
     this.overlays = []
+    sampler.setCursorSpeed(1)
     if (this.live) sampler.stop()
     overlays.forEach(({ window }) => {
       if (!window.isDestroyed()) window.destroy()
@@ -150,16 +149,13 @@ export class Picker {
     window.setBounds(bounds)
 
     const pixels = image ? image.getSize() : pixelSize(display)
-    const loupe = this.options.loupe()
     const init: PickerInit = {
       width: bounds.width,
       height: bounds.height,
       pixelWidth: pixels.width,
       pixelHeight: pixels.height,
       image: image ? { width: pixels.width, height: pixels.height, data: image.toBitmap() } : null,
-      cursor: cursor ? { x: cursor.x - bounds.x, y: cursor.y - bounds.y } : null,
-      loupeSize: loupe.size,
-      loupeZoom: loupe.zoom
+      cursor: cursor ? { x: cursor.x - bounds.x, y: cursor.y - bounds.y } : null
     }
     window.webContents.once('did-finish-load', () => {
       window.webContents.send(IPC.pickerInit, init)
@@ -173,6 +169,10 @@ export class Picker {
     })
     // Losing an overlay (e.g. display unplugged) ends the session.
     window.on('closed', () => {
+      if (this.overlays.some((overlay) => overlay.window === window)) this.close()
+    })
+    // A crashed overlay could no longer pick or cancel, which would leave the mouse slowed down.
+    window.webContents.on('render-process-gone', () => {
       if (this.overlays.some((overlay) => overlay.window === window)) this.close()
     })
     loadRenderer(window, 'picker')

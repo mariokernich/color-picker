@@ -8,7 +8,7 @@ const picker: PickerApi = {
   pick: (hex, keepOpen) => ipcRenderer.send(IPC.pickerPick, hex, keepOpen),
   cancel: () => ipcRenderer.send(IPC.pickerCancel),
   focus: () => ipcRenderer.send(IPC.pickerFocus),
-  setLoupe: (size, zoom) => ipcRenderer.send(IPC.pickerLoupe, size, zoom),
+  setCursorSpeed: (speed) => ipcRenderer.send(IPC.pickerCursorSpeed, speed),
   read: (x, y, width, height) => ipcRenderer.invoke(IPC.pickerRead, x, y, width, height)
 }
 

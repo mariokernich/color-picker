@@ -1,6 +1,6 @@
 import { isLight, parseHex } from '@shared/color'
 import type { PickerInit } from '@shared/api'
-import { bgraToRgba, loupeCells, pixelHex } from '@shared/pixels'
+import { bgraToRgba, cursorSpeed, loupeCells, pixelHex } from '@shared/pixels'
 import { LOUPE_SIZE, LOUPE_ZOOM } from '@shared/state'
 import './picker.css'
 
@@ -67,17 +67,19 @@ window.picker.onInit((init) => {
   const region = init.image ? createRegion(screenCanvas, 0, 0, init.image, true) : null
   const scaleX = init.pixelWidth / init.width
   const scaleY = init.pixelHeight / init.height
+  const x = init.cursor ? Math.floor(init.cursor.x * scaleX) : 0
+  const y = init.cursor ? Math.floor(init.cursor.y * scaleY) : 0
   state = {
     init,
     region,
     live,
     scaleX,
     scaleY,
-    x: init.cursor ? Math.floor(init.cursor.x * scaleX) : 0,
-    y: init.cursor ? Math.floor(init.cursor.y * scaleY) : 0,
+    x,
+    y,
     visible: init.cursor !== null,
-    size: init.loupeSize,
-    zoom: init.loupeZoom,
+    size: LOUPE_SIZE.default,
+    zoom: LOUPE_ZOOM.default,
     picked: 0
   }
   if (init.cursor) showHint()
@@ -202,7 +204,8 @@ function resize(sizeDelta: number, zoomDelta: number): void {
   state.size = Math.min(LOUPE_SIZE.max, Math.max(LOUPE_SIZE.min, state.size + sizeDelta))
   state.zoom = Math.min(LOUPE_ZOOM.max, Math.max(LOUPE_ZOOM.min, state.zoom + zoomDelta))
   render()
-  window.picker.setLoupe(state.size, state.zoom)
+  // The bigger or further zoomed in the loupe, the slower the mouse.
+  window.picker.setCursorSpeed(cursorSpeed(state.size, state.zoom))
 }
 
 async function pick(keepOpen: boolean): Promise<void> {
@@ -235,7 +238,8 @@ function showHint(): void {
   window.setTimeout(() => hint.classList.add('fade'), 3500)
 }
 
-window.addEventListener('mousemove', (event) => {
+// Pointer events report fractions of a CSS pixel, so the slowed-down mouse reaches every pixel.
+window.addEventListener('pointermove', (event) => {
   if (!state) return
   moveTo(event.clientX * state.scaleX, event.clientY * state.scaleY)
 })

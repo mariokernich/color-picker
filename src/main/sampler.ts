@@ -16,6 +16,8 @@ interface NativeSampler {
   /** BGRA pixels of a region in display pixels, transparent outside the display. */
   read(displayId: number, x: number, y: number, width: number, height: number): Uint8Array | null
   stop(): void
+  /** Applies this share (0-1] of the mouse movement while the app's windows get it. */
+  setCursorSpeed?(speed: number): void
 }
 
 /** Starting gives up after this long, e.g. when macOS never answers the permission query. */
@@ -95,5 +97,10 @@ export const sampler = {
 
   stop(): void {
     native?.stop()
+  },
+
+  /** Slows the mouse down (speed below 1) while the picker overlays get its movement. */
+  setCursorSpeed(speed: number): void {
+    load()?.setCursorSpeed?.(speed)
   }
 }

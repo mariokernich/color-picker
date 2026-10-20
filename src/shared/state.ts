@@ -10,14 +10,13 @@ export const DEFAULT_SETTINGS: Settings = {
   copyOnPick: true,
   freezeScreen: false,
   historyLimit: 200,
-  loupeSize: 168,
-  loupeZoom: 12,
   theme: 'system',
   launchAtLogin: false
 }
 
-export const LOUPE_SIZE = { min: 96, max: 320, step: 24 }
-export const LOUPE_ZOOM = { min: 4, max: 32, step: 2 }
+/** Every pick starts with the default loupe size and zoom. */
+export const LOUPE_SIZE = { min: 96, max: 320, step: 24, default: 168 }
+export const LOUPE_ZOOM = { min: 4, max: 32, step: 2, default: 12 }
 
 export function createInitialData(): AppData {
   return {
@@ -255,11 +254,18 @@ export function migrate(raw: unknown): AppData {
   const initial = createInitialData()
   if (!raw || typeof raw !== 'object') return initial
   const data = raw as Partial<AppData>
+  const settings: Settings & { loupeSize?: number; loupeZoom?: number } = {
+    ...initial.settings,
+    ...data.settings
+  }
+  // Stored until 0.1.1; every pick now starts with the default loupe.
+  delete settings.loupeSize
+  delete settings.loupeZoom
   return {
     version: 1,
     history: Array.isArray(data.history) ? data.history : [],
     palettes: Array.isArray(data.palettes) ? data.palettes : [],
     activePaletteId: typeof data.activePaletteId === 'string' ? data.activePaletteId : null,
-    settings: { ...initial.settings, ...(data.settings ?? {}) }
+    settings
   }
 }

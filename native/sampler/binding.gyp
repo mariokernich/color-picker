@@ -16,6 +16,7 @@
             'MACOSX_DEPLOYMENT_TARGET': '13.0',
             'CLANG_ENABLE_OBJC_ARC': 'YES',
             'OTHER_LDFLAGS': [
+              '-framework AppKit',
               '-framework CoreGraphics',
               '-framework CoreMedia',
               '-framework CoreVideo',
