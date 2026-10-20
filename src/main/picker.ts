@@ -171,6 +171,10 @@ export class Picker {
     window.on('closed', () => {
       if (this.overlays.some((overlay) => overlay.window === window)) this.close()
     })
+    // A crashed overlay could no longer pick or cancel, which would leave the mouse slowed down.
+    window.webContents.on('render-process-gone', () => {
+      if (this.overlays.some((overlay) => overlay.window === window)) this.close()
+    })
     loadRenderer(window, 'picker')
     return { window, display }
   }

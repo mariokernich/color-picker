@@ -16,7 +16,7 @@ interface NativeSampler {
   /** BGRA pixels of a region in display pixels, transparent outside the display. */
   read(displayId: number, x: number, y: number, width: number, height: number): Uint8Array | null
   stop(): void
-  /** Applies this share (0-1] of the mouse movement while the app's windows get it; macOS only. */
+  /** Applies this share (0-1] of the mouse movement while the app's windows get it. */
   setCursorSpeed?(speed: number): void
 }
 

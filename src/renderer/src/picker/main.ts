@@ -204,7 +204,7 @@ function resize(sizeDelta: number, zoomDelta: number): void {
   state.size = Math.min(LOUPE_SIZE.max, Math.max(LOUPE_SIZE.min, state.size + sizeDelta))
   state.zoom = Math.min(LOUPE_ZOOM.max, Math.max(LOUPE_ZOOM.min, state.zoom + zoomDelta))
   render()
-  // The bigger or further zoomed in the loupe, the slower the mouse (macOS only).
+  // The bigger or further zoomed in the loupe, the slower the mouse.
   window.picker.setCursorSpeed(cursorSpeed(state.size, state.zoom))
 }
 
