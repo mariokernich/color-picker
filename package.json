@@ -21,7 +21,7 @@
     "postinstall": "node scripts/build-native.mjs --optional",
     "dist:mac": "npm run build && electron-builder --mac dmg zip",
     "dist:mac-release": "npm run build && electron-builder --mac dmg zip --universal -c.mac.notarize=true -c.dmg.sign=true",
-    "dist:mas": "npm run build && electron-builder --mac mas",
+    "dist:mas": "npm run build && electron-builder --mac mas --universal",
     "dist:mas-dev": "npm run build && electron-builder --mac mas-dev",
     "dist:win": "npm run build && electron-builder --win nsis",
     "dist:appx": "npm run build && electron-builder --win appx"
