@@ -17,6 +17,8 @@ copies colors in the format you need.
 - **History & palettes**: every pick lands in the history and is copied to the clipboard. Palettes
   can collect picked colors automatically, and colors can be dragged between them (hold `Alt` to copy).
   Palettes export as JSON, CSS and SCSS variables, a Tailwind config or a GIMP/Inkscape palette.
+  With "Watch clipboard" (off by default), colors copied in other apps (`#FF8800`, `rgb(…)`,
+  `hsl(…)`) land in the history too.
 - **Color panel**: saturation/brightness area, hue and opacity sliders, RGB/HSL/HSB inputs, names and
   17 copy formats (CSS Hex/RGB/HSL/OKLCH, SwiftUI, UIColor, NSColor, Android XML/Compose, Flutter,
   .NET, Java, Unity, OpenGL, …).

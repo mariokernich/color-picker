@@ -18,6 +18,8 @@ interface NativeSampler {
   stop(): void
   /** Applies this share (0-1] of the mouse movement while the app's windows get it. */
   setCursorSpeed?(speed: number): void
+  /** Increases whenever something is copied; macOS and Windows. */
+  clipboardChangeCount?(): number
 }
 
 /** Starting gives up after this long, e.g. when macOS never answers the permission query. */
@@ -103,4 +105,12 @@ export const sampler = {
   setCursorSpeed(speed: number): void {
     load()?.setCursorSpeed?.(speed)
   }
+}
+
+/**
+ * The system's clipboard change count from the native module (which is the sampler's, as it is
+ * the app's only one), or `null` without it.
+ */
+export function clipboardChangeCount(): number | null {
+  return load()?.clipboardChangeCount?.() ?? null
 }

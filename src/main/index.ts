@@ -3,7 +3,6 @@ import { writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import {
   app,
-  clipboard,
   dialog,
   ipcMain,
   nativeTheme,
@@ -17,6 +16,7 @@ import { formatColor } from '../shared/formats'
 import { PRODUCT } from '../shared/product'
 import { Action } from '../shared/state'
 import type { AppData, CollectionId, ExportFormat, PlatformInfo, ScreenAccess } from '../shared/types'
+import { ClipboardWatcher } from './clipboard'
 import { Picker } from './picker'
 import { Shortcuts } from './shortcuts'
 import { DataStore } from './store'
@@ -66,6 +66,11 @@ function main(): void {
   const screenAccess = (): ScreenAccess =>
     isMac ? systemPreferences.getMediaAccessStatus('screen') : 'granted'
 
+  const clipboardWatcher = new ClipboardWatcher((hex) =>
+    store.dispatch({ type: 'addColors', hexes: [hex], historyOnly: true })
+  )
+  clipboardWatcher.setEnabled(store.state.settings.watchClipboard)
+
   const picker = new Picker({
     freeze: () => store.state.settings.freezeScreen,
     onPick: (hex) => {
@@ -73,7 +78,7 @@ function main(): void {
       if (!color) return
       store.dispatch({ type: 'addColors', hexes: [hex] })
       if (store.state.settings.copyOnPick) {
-        clipboard.writeText(formatColor(color, store.state.settings.formatId))
+        void clipboardWatcher.copy(formatColor(color, store.state.settings.formatId))
       }
     },
     onClose: () => {
@@ -146,6 +151,7 @@ function main(): void {
     sendToPopover(IPC.stateChanged, data)
     if (data.settings === previous.settings) return
     applySettings(data)
+    clipboardWatcher.setEnabled(data.settings.watchClipboard)
     if (data.settings.launchAtLogin !== previous.settings.launchAtLogin) {
       applyLoginItem(data.settings.launchAtLogin)
     }
@@ -164,7 +170,7 @@ function main(): void {
     store.dispatch(action)
   })
   ipcMain.handle(IPC.startPicker, () => startPicker())
-  ipcMain.handle(IPC.copy, (_event, text: string) => clipboard.writeText(String(text)))
+  ipcMain.handle(IPC.copy, (_event, text: string) => clipboardWatcher.copy(String(text)))
   ipcMain.handle(IPC.exportCollection, async (_event, collection: CollectionId, format: ExportFormat) => {
     const data = store.state
     const palette = data.palettes.find((item) => item.id === collection)

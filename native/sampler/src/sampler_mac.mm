@@ -328,12 +328,19 @@ Napi::Value SetCursorSpeed(const Napi::CallbackInfo &info) {
   return info.Env().Undefined();
 }
 
+// Counts changes of the general pasteboard. Reading the count is not reading the clipboard, so it
+// does not raise the macOS pasteboard privacy alert.
+Napi::Value ClipboardChangeCount(const Napi::CallbackInfo &info) {
+  return Napi::Number::New(info.Env(), double(NSPasteboard.generalPasteboard.changeCount));
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   sampleQueue = dispatch_queue_create("de.kernich.colorpicker.sampler", DISPATCH_QUEUE_SERIAL);
   exports.Set("start", Napi::Function::New(env, Start));
   exports.Set("read", Napi::Function::New(env, Read));
   exports.Set("stop", Napi::Function::New(env, Stop));
   exports.Set("setCursorSpeed", Napi::Function::New(env, SetCursorSpeed));
+  exports.Set("clipboardChangeCount", Napi::Function::New(env, ClipboardChangeCount));
   return exports;
 }
 

@@ -38,6 +38,13 @@ describe('reduce', () => {
     expect(data.history).toHaveLength(3)
   })
 
+  it('keeps history-only colors out of the active palette', () => {
+    let data = run(createInitialData(), { type: 'createPalette', name: 'Brand', activate: true })
+    data = run(data, { type: 'addColors', hexes: ['#111'], historyOnly: true })
+    expect(data.history.map((c) => c.hex)).toEqual(['#111111'])
+    expect(data.palettes[0].colors).toHaveLength(0)
+  })
+
   it('moves and copies colors between palettes', () => {
     let data = run(
       createInitialData(),

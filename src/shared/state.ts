@@ -9,6 +9,7 @@ export const DEFAULT_SETTINGS: Settings = {
   trayClickAction: 'popover',
   copyOnPick: true,
   freezeScreen: false,
+  watchClipboard: false,
   historyLimit: 200,
   theme: 'system',
   launchAtLogin: false
@@ -29,7 +30,8 @@ export function createInitialData(): AppData {
 }
 
 export type Action =
-  | { type: 'addColors'; hexes: string[] }
+  /** `historyOnly` keeps the colors out of the collecting palette, e.g. for copied colors. */
+  | { type: 'addColors'; hexes: string[]; historyOnly?: boolean }
   | { type: 'addToPalette'; paletteId: string; hexes: string[] }
   | { type: 'updateColor'; collection: CollectionId; colorId: string; hex?: string; name?: string }
   | { type: 'deleteColors'; collection: CollectionId; colorIds: string[] }
@@ -117,7 +119,7 @@ export function reduce(data: AppData, action: Action, ctx: ReduceContext): AppDa
       }
       history = history.slice(0, data.settings.historyLimit)
       const next = { ...data, history }
-      return data.activePaletteId
+      return data.activePaletteId && !action.historyOnly
         ? reduce(next, { type: 'addToPalette', paletteId: data.activePaletteId, hexes }, ctx)
         : next
     }

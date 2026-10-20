@@ -1,7 +1,7 @@
 {
   "name": "color-picker",
   "productName": "ChipDeck",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A fast, unobtrusive color picker for macOS and Windows.",
   "author": {
     "name": "Mario Kernich",
@@ -21,7 +21,7 @@
     "postinstall": "node scripts/build-native.mjs --optional",
     "dist:mac": "npm run build && electron-builder --mac dmg zip",
     "dist:mac-release": "npm run build && electron-builder --mac dmg zip --universal -c.mac.notarize=true -c.dmg.sign=true",
-    "dist:mas": "npm run build && electron-builder --mac mas",
+    "dist:mas": "npm run build && electron-builder --mac mas --universal",
     "dist:mas-dev": "npm run build && electron-builder --mac mas-dev",
     "dist:win": "npm run build && electron-builder --win nsis",
     "dist:appx": "npm run build && electron-builder --win appx"
