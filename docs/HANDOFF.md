@@ -1,6 +1,6 @@
 # Handoff: Current State & Next Steps
 
-_Last updated: 2026-10-19_
+_Last updated: 2026-10-21_
 
 This document is for the next developer or AI assistant working on this repository on a local Mac
 or Windows machine. Read it together with [`CLAUDE.md`](../CLAUDE.md) (conventions),
@@ -10,16 +10,22 @@ Legend: 🧑 = needs the owner (accounts, money, legal decisions) · 🤖 = an a
 🌐 = an assistant with browser access (e.g. Claude in Chrome) can do it in the owner's signed-in
 browser, with the owner confirming.
 
-## 0. Release `v0.1.1` ✅ (2026-10-19)
+## 0. Status: `v0.1.3` released, Mac App Store review pending (2026-10-21)
 
-`v0.1.1` (live picker, PR #1) is public and marked "Latest":
-https://github.com/mariokernich/color-picker/releases/tag/v0.1.1. It was made from CI draft
-`v0.1.1-build.6` like this; repeat the steps for the next public release:
+- **GitHub:** `v0.1.3` is public and marked "Latest":
+  https://github.com/mariokernich/color-picker/releases/tag/v0.1.3 (`v0.1.2` came out a day
+  earlier with the same steps).
+- **Mac App Store:** version 0.1.3 (build 0.1.3, universal) was submitted on 2026-10-21 and is
+  *Waiting for Review*, with **manual release**. After approval, 🧑 releases it in App Store
+  Connect (Distribution → macOS App → *Release This Version*). Then 🤖 replaces the "Coming
+  soon" button on the website (section 7). If Apple rejects it, read the message in App Store
+  Connect → App Review, fix it on a `fix/*` branch, bump the version and upload again (5.5).
 
-1. **Hardware check:** the owner confirmed "Live picker" and "Color accuracy (live)" of the macOS
-   checklist (section 2) with `npm install && npm run dev`. `npm install` builds the native sampler
-   (needs the Xcode Command Line Tools; without them it only warns and the picker freezes the
-   screen).
+How a public GitHub release is made; repeat it for the next version:
+
+1. **Hardware check** with `npm install && npm run dev` for whatever changed (section 2).
+   `npm install` builds the native sampler (needs the Xcode Command Line Tools; without them it
+   only warns and the picker freezes the screen).
 2. **Signed macOS build** on `main` (Developer ID key is in the owner's login keychain, App Store
    Connect API key in `~/.appstoreconnect/private_keys/`; use the key with the *Developer* role,
    key ID and issuer ID are on App Store Connect → Users and Access → Integrations →
@@ -30,9 +36,9 @@ https://github.com/mariokernich/color-picker/releases/tag/v0.1.1. It was made fr
    APPLE_API_KEY=~/.appstoreconnect/private_keys/AuthKey_<KEYID>.p8 \
    APPLE_API_KEY_ID=<KEYID> APPLE_API_ISSUER=<issuer id> \
    npm run dist:mac-release
-   xcrun notarytool submit dist/ChipDeck-0.1.1.dmg --key <p8> --key-id <KEYID> --issuer <issuer id> --wait
-   xcrun stapler staple dist/ChipDeck-0.1.1.dmg
-   spctl -a -vvv -t open --context context:primary-signature dist/ChipDeck-0.1.1.dmg
+   xcrun notarytool submit dist/ChipDeck-<version>.dmg --key <p8> --key-id <KEYID> --issuer <issuer id> --wait
+   xcrun stapler staple dist/ChipDeck-<version>.dmg
+   spctl -a -vvv -t open --context context:primary-signature dist/ChipDeck-<version>.dmg
    ```
    `spctl` must report "Notarized Developer ID". Also check that the native sampler is inside and
    signed: `codesign -dv "dist/mac-universal/ChipDeck.app/Contents/Resources/native/sampler.node"`
@@ -46,7 +52,8 @@ https://github.com/mariokernich/color-picker/releases/tag/v0.1.1. It was made fr
    --notes-file <notes> --draft=false --latest`. Release notes: changes first, then the download
    table and the signing/SmartScreen notes of the previous release.
 
-**Next:** legal texts (section 4) and the store submissions (sections 5 and 6).
+**Next:** App Store review (above), test the new features on Windows (section 2), legal texts
+(section 4) and the Microsoft Store (section 6).
 
 ## 1. Current state
 
@@ -54,21 +61,23 @@ https://github.com/mariokernich/color-picker/releases/tag/v0.1.1. It was made fr
 
 - Electron 44 + React 19 + TypeScript menu bar / tray app for macOS and Windows.
 - Features: live screen picker with loupe on every display (native sampler in `native/sampler`,
-  optional "Freeze screen while picking"), color history, palettes (drag & drop,
-  export as JSON/CSS/SCSS/Tailwind/GIMP), color editor with 17 copy formats, WCAG contrast
-  checker, settings (copy format, global shortcuts, tray click action, theme, history size, open at
-  login).
+  optional "Freeze screen while picking"; every pick starts with the default loupe size and zoom,
+  and the bigger or further zoomed in the loupe, the slower the mouse), color history with an
+  optional "Watch clipboard" (colors copied in other apps land in the history), palettes
+  (drag & drop, export as JSON/CSS/SCSS/Tailwind/GIMP), color editor with 17 copy formats, WCAG
+  contrast checker, settings (copy format, global shortcuts, tray click action, theme, history
+  size, open at login).
 - Menu bar / tray icon: three fanned color cards (template image on macOS, light/dark variant
   following the taskbar theme on Windows). Icons are generated by `npm run icons`.
 - **Business model: free download from GitHub Releases, paid app (one-time purchase of 9.99 USD /
   9.99 EUR) in the Mac App Store and the Microsoft Store.** No in-app purchases, no subscription, no
   license code in the app.
-- 65 unit tests (Vitest), typecheck and build are green.
+- 74 unit tests (Vitest), typecheck and build are green.
 
 ### Repository & automation
 
 - Repository is **public** (`LICENSE`: all rights reserved, source visible for transparency only).
-- Default branch `main`. The old branch `feat/color-picker-app` is obsolete (see 7.).
+- Default branch `main`; merged branches are deleted (only `main` exists as of 2026-10-21).
 - GitHub Actions:
   | Workflow | Trigger | What it does |
   | --- | --- | --- |
@@ -78,11 +87,11 @@ https://github.com/mariokernich/color-picker/releases/tag/v0.1.1. It was made fr
 - CI release builds stay drafts: they are **unsigned** and for testing only. Public releases
   (`v<version>`) get a signed and notarized macOS build from `npm run dist:mac-release` on the
   owner's Mac plus the Windows installers from CI (see `docs/STORE.md`).
-- **Public release `v0.1.1`** (2026-10-19, "Latest"): signed and notarized universal DMG/ZIP,
-  unsigned Windows NSIS installers (x64, arm64) from CI draft `v0.1.1-build.6`. `v0.1.0`
-  (2026-10-18) was built the same way. The free download is not mentioned on the website or in
-  the README on purpose.
-- No CI drafts are left; the next push to `main` creates a new one.
+- **Public release `v0.1.3`** (2026-10-21, "Latest"): signed and notarized universal DMG/ZIP,
+  unsigned Windows NSIS installers (x64, arm64) from CI draft `v0.1.3-build.8`. `v0.1.0`,
+  `v0.1.1` and `v0.1.2` were built the same way. The free download is not mentioned on the
+  website or in the README on purpose.
+- No CI drafts are left; the next push to `main` (except docs/site) creates a new one.
 
 ### Website (live)
 
@@ -95,13 +104,15 @@ https://github.com/mariokernich/color-picker/releases/tag/v0.1.1. It was made fr
 
 ### Not verified yet
 
-On real macOS (owner's Mac, 2026-10-19) the live picker and its color accuracy are confirmed. The
-rest of the macOS checklist and **all of Windows** are still unverified; expect platform issues in
-step 2.
+On real macOS (owner's Mac) these are confirmed: the live picker and its color accuracy
+(2026-10-19), the slower mouse for big loupes (2026-10-20) and "Watch clipboard" (2026-10-21,
+`pbcopy` test). The rest of the macOS checklist, the sandboxed App Store build beyond a start test,
+and **all of Windows** are still unverified. In particular, the Windows cursor slowdown
+(`WH_MOUSE_LL` hook in `native/sampler/src/sampler_win.cc`) has only been compiled in CI.
 
 ## 2. Verify on real hardware (🤖 with 🧑 clicking)
 
-Either run from source or install the packages from release `v0.1.1` (macOS signed and
+Either run from source or install the packages from release `v0.1.3` (macOS signed and
 notarized; on Windows "More info → Run anyway").
 
 ```bash
@@ -126,6 +137,12 @@ macOS checklist:
 - [ ] **Freeze screen while picking** (Settings): the picker shows a still image again. Compare its
       colors with Digital Color Meter too; if they differ, fix the color space handling of the
       `desktopCapturer` capture in `src/main/picker.ts`.
+- [x] **Slower mouse:** with a big or zoomed-in loupe the mouse moves noticeably slower and
+      smoothly; every pixel is reachable on Retina. _(Owner, 2026-10-20.)_ Still open: on a second
+      display and over full-screen apps.
+- [x] **Watch clipboard** (Settings): a copied `#13579B`, `rgb(…)` or `c0ffee` lands in the
+      history, other text does not. _(2026-10-21, `pbcopy`.)_ Still open: the macOS pasteboard
+      privacy prompt on first use, and that copying a color from ChipDeck itself is not added again.
 - [ ] Global shortcut (default ⌘⌥⇧C) works from other apps; shortcut recorder in Settings works.
 - [ ] Clicking the menu bar icon while the popover is open closes it (no flicker/reopen).
 - [ ] Export keeps the popover open and writes the file.
@@ -142,6 +159,9 @@ Windows checklist:
 - [ ] **Freeze screen while picking** (Settings) still works.
 - [ ] `npm install` without the Visual Studio Build Tools only warns, and the picker freezes the
       screen.
+- [ ] **Slower mouse:** with a big or zoomed-in loupe the mouse moves slower and smoothly, also at
+      150 % DPI; after closing the picker (also with Esc) the mouse moves normally again.
+- [ ] **Watch clipboard:** copied colors land in the history.
 - [ ] Global shortcut (default Ctrl+Alt+Shift+C) works.
 
 Fix what fails on a `fix/*` branch with small commits; run `npm run typecheck && npm test` first.
@@ -167,17 +187,17 @@ Fix what fails on a `fix/*` branch with small commits; run `npm run typecheck &&
 
 ### 5.1 Accounts & legal (🧑, 🌐 can help fill forms)
 
-- [ ] Apple Developer Program (99 USD/year).
-- [ ] App Store Connect → Business: accept the **Paid Apps Agreement**, tax forms, bank account.
-      Paid apps cannot go on sale before this is complete.
-- [ ] Enrol in the **App Store Small Business Program** (15 % instead of 30 % commission).
+- [x] Apple Developer Program (99 USD/year).
+- [x] App Store Connect → Business: **Paid Apps Agreement** (new version accepted 2026-10-20), tax
+      forms, bank account and Digital Services Act trader details are active.
+- [x] **App Store Small Business Program** (proceeds are 85 % of the price).
 
 ### 5.2 Certificates, profiles, entitlements (🧑/🌐 in the portal, 🤖 wires up)
 
 - [x] App ID `de.kernich.colorpicker` (team `34JNW2E282`).
 - [x] Certificates in the owner's login keychain: *Apple Distribution*, *3rd Party Mac Developer
-      Installer* (= Mac Installer Distribution), *Apple Development*. The *Developer ID
-      Application* certificate exists in the portal, but its private key is not on the owner's Mac.
+      Installer* (= Mac Installer Distribution), *Apple Development* and *Developer ID
+      Application* (for the GitHub releases).
 - [x] Provisioning profiles *Color Picker Mac App Store* → `build/embedded.provisionprofile` and
       *Color Picker Mac Development* (includes the owner's MacBook Pro) →
       `build/development.provisionprofile` (both git-ignored, only on the owner's Mac).
@@ -190,33 +210,49 @@ Fix what fails on a `fix/*` branch with small commits; run `npm run typecheck &&
 npm run dist:mas-dev     # signed with the development profile
 ```
 
-Run it from `dist/mas-dev-universal/`. Check: starts, menu bar icon, picker + permission prompt,
-export via save dialog (sandbox file access), settings persist, "Open at login" works.
+Run it from `dist/mas-dev-arm64/` (`dist:mas-dev` builds for the Mac's own architecture). Check:
+starts, menu bar icon, picker + permission prompt, slower mouse, watch clipboard, export via save
+dialog (sandbox file access), settings persist, "Open at login" works. As of 2026-10-21 only the
+start was checked (no sandbox violations in the log).
 
 ### 5.4 App Store Connect record (🧑/🌐, 🤖 prepares texts and screenshots)
 
 - [x] New macOS app "ChipDeck: Color Picker" (Apple ID 6824296695, SKU `chipdeck-macos`, English).
-- [ ] Add German as a localization.
-- [ ] Category *Graphics & Design* (secondary *Developer Tools*).
-- [ ] **Pricing:** base price 9.99 USD, then explicitly set the EUR price to 9.99 €.
-- [ ] App Privacy: **Data Not Collected**. Privacy URL:
+- [x] German localization "ChipDeck: Farbpipette".
+- [x] Category *Graphics & Design* (secondary *Developer Tools*).
+- [x] **Pricing:** 9.99 USD; App Store Connect sets 9.99 € (DE, AT) and 9.00 CHF.
+- [x] App Privacy: **Data Not Collected**. Privacy URL:
       `https://mariokernich.github.io/color-picker/privacy.html`.
-- [ ] Support and marketing URL: `https://mariokernich.github.io/color-picker/`.
-- [ ] Age rating questionnaire (all "None" → 4+).
-- [ ] 🤖 Description, subtitle, keywords, promotional text (EN + DE).
-- [ ] 🤖 Screenshots 2880×1800 (or 1440×900 / 2560×1600) taken on the real Mac: loupe, popover with
-      history and palettes, color editor, contrast checker.
+- [x] Support and marketing URL: `https://mariokernich.github.io/color-picker/`.
+- [x] Age rating 4+.
+- [x] Description, subtitle, keywords, promotional text (EN + DE), review notes (they also
+      explain the slower mouse and "Watch clipboard").
+- [x] Screenshots 2880×1800, 5 per language: real app UI (the built renderer with the browser mock
+      data, and the real picker code drawing the loupe over a made-up website) rendered by headless
+      Chrome, with a caption on a gradient. The generator scripts are not in the repository yet
+      (section 7).
+
+The texts, screenshots, build and submission were set through the **App Store Connect API**
+with the key that has the *App Manager* role (`~/.appstoreconnect/private_keys/`; key ID and
+issuer ID on App Store Connect → Users and Access → Integrations). Only App Privacy and the
+agreements need the browser.
 
 ### 5.5 Build, upload, review (🤖 builds, 🧑 submits)
 
 ```bash
-npm run dist:mas         # dist/mas-universal/<name>-<version>.pkg
+npm run dist:mas         # dist/mas-universal/ChipDeck-<version>-universal.pkg
+xcrun altool --upload-package dist/mas-universal/ChipDeck-<version>-universal.pkg --type macos \
+  --apple-id 6824296695 --bundle-id de.kernich.colorpicker \
+  --bundle-version <version> --bundle-short-version-string <version> \
+  --apiKey <KEYID> --apiIssuer <issuer id>
 ```
 
 - Bump `version` in `package.json`; every upload needs a unique, increasing build number
-  (`-c.buildVersion=<n>` or `buildVersion` in `electron-builder.yml`).
-- Upload with **Transporter**, select the build in the version, add the review notes from
-  `docs/STORE.md`, submit.
+  (`-c.buildVersion=<n>` or `buildVersion` in `electron-builder.yml`). The App Store version
+  number must match `CFBundleShortVersionString`.
+- After processing (5–30 min), set the build's export compliance (no non-exempt encryption),
+  select it in the version and submit (API: `reviewSubmissions` + `reviewSubmissionItems`, or
+  *Add for Review* in the browser).
 - Pre-empt common rejections: explain Screen Recording use and the menu bar–only UI in the review
   notes, make sure the privacy URL works, verify all Electron helpers are signed.
 
@@ -251,9 +287,11 @@ npm run dist:mas         # dist/mas-universal/<name>-<version>.pkg
 ## 7. Housekeeping
 
 - [x] Delete the outdated draft releases `v0.1.0-build.1/3/4/5` (done 2026-10-19).
-- [ ] 🤖 Commit the `package-lock.json` update that `npm install` produces since the native
-      sampler's `postinstall` (`"hasInstallScript": true`); `npm ci` and builds work without it.
-- [ ] 🧑/🌐 Delete the branch `feat/color-picker-app` (Branches page).
+- [x] Commit the `package-lock.json` update with `"hasInstallScript": true` (2026-10-20).
+- [x] Delete merged branches, including `feat/color-picker-app` (2026-10-21).
+- [ ] 🤖 Put the App Store screenshot generator (headless Chrome via the DevTools protocol) and
+      the App Store Connect API helper into `scripts/store/`, so the next update can regenerate
+      the screenshots and texts.
 - [ ] 🧑 Decide: should `release.yml` delete older drafts automatically (e.g. keep the newest 3)?
       Otherwise every push to `main` adds a draft. 🤖 can add a cleanup step using `gh release
       delete` with the workflow token.

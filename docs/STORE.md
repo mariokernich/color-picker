@@ -60,9 +60,19 @@ Things to keep in mind:
 npm run dist:mas        # dist/mas-universal/ChipDeck-<version>-universal.pkg
 ```
 
-Upload the `.pkg` with **Transporter**, select the build in the app version and submit it.
+Upload the `.pkg` with **Transporter**, or with the App Store Connect API key (role *App Manager*):
 
-Review notes to include:
+```bash
+xcrun altool --upload-package dist/mas-universal/ChipDeck-<version>-universal.pkg --type macos \
+  --apple-id 6824296695 --bundle-id de.kernich.colorpicker \
+  --bundle-version <version> --bundle-short-version-string <version> \
+  --apiKey <KEYID> --apiIssuer <issuer id>
+```
+
+Then answer export compliance for the build (no non-exempt encryption: the app has no network
+access), select it in the app version and submit it.
+
+Review notes to include (the submitted ones also explain the slower mouse and "Watch clipboard"):
 
 > ChipDeck is a menu bar app (no Dock icon). Click the icon in the menu bar to open it.
 > Picking colors from the screen requires the Screen Recording permission, which macOS asks for the
