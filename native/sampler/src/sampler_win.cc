@@ -113,17 +113,10 @@ Napi::Value Stop(const Napi::CallbackInfo& info) {
   return info.Env().Undefined();
 }
 
-// Moves the mouse cursor to a point on the virtual screen in physical pixels.
-Napi::Value MoveCursor(const Napi::CallbackInfo& info) {
-  SetCursorPos(info[0].As<Napi::Number>().Int32Value(), info[1].As<Napi::Number>().Int32Value());
-  return info.Env().Undefined();
-}
-
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("start", Napi::Function::New(env, Start));
   exports.Set("read", Napi::Function::New(env, Read));
   exports.Set("stop", Napi::Function::New(env, Stop));
-  exports.Set("moveCursor", Napi::Function::New(env, MoveCursor));
   return exports;
 }
 

@@ -2,6 +2,7 @@
 // this app's own windows (the picker overlays) and converts frames to sRGB. Reads copy small
 // regions of the latest frame of a display.
 
+#import <AppKit/AppKit.h>
 #import <CoreGraphics/CoreGraphics.h>
 #import <CoreMedia/CoreMedia.h>
 #import <CoreVideo/CoreVideo.h>
@@ -270,12 +271,60 @@ Napi::Value Stop(const Napi::CallbackInfo &info) {
   return info.Env().Undefined();
 }
 
-// Moves the mouse cursor to a global point in display points (origin top left of the main display).
-Napi::Value MoveCursor(const Napi::CallbackInfo &info) {
-  CGWarpMouseCursorPosition(CGPointMake(info[0].As<Napi::Number>().DoubleValue(),
-                                        info[1].As<Napi::Number>().DoubleValue()));
-  // Without this, macOS ignores mouse movement for a moment after the warp.
-  CGAssociateMouseAndMouseCursorPosition(true);
+// Slowing down the cursor works like pointer lock: the cursor (hidden over the picker overlays)
+// is detached from the mouse and stays put, while a local event monitor (no permission needed,
+// it only sees events that go to this app's windows) applies a share of each mouse movement to
+// its own position and hands the event on at that position. The cursor is moved there once, when
+// the slowdown ends; moving it on every event would make macOS drop mouse input for a moment.
+id cursorMonitor = nil;
+double cursorSpeed = 1;
+// Global position in Cocoa coordinates (origin bottom left of the main display).
+NSPoint cursorPosition;
+
+NSScreen *ScreenAt(NSPoint point) {
+  for (NSScreen *screen in NSScreen.screens) {
+    if (NSPointInRect(point, screen.frame)) return screen;
+  }
+  return NSScreen.mainScreen;
+}
+
+NSEvent *SlowDown(NSEvent *event) {
+  // The overlay covers one display, so the position stays on it.
+  NSRect frame = ScreenAt(cursorPosition).frame;
+  double x = cursorPosition.x + event.deltaX * cursorSpeed;
+  double y = cursorPosition.y - event.deltaY * cursorSpeed;
+  cursorPosition.x = std::clamp(x, NSMinX(frame), NSMaxX(frame) - 0.01);
+  cursorPosition.y = std::clamp(y, NSMinY(frame), NSMaxY(frame) - 0.01);
+  if (!event.window) return event;
+  return [NSEvent mouseEventWithType:event.type
+                            location:[event.window convertPointFromScreen:cursorPosition]
+                       modifierFlags:event.modifierFlags
+                           timestamp:event.timestamp
+                        windowNumber:event.windowNumber
+                             context:nil
+                         eventNumber:event.eventNumber
+                          clickCount:event.clickCount
+                            pressure:event.pressure];
+}
+
+// Applies this share (0-1] of the mouse movement while this app's windows get the events.
+Napi::Value SetCursorSpeed(const Napi::CallbackInfo &info) {
+  double speed = std::clamp(info[0].As<Napi::Number>().DoubleValue(), 0.05, 1.0);
+  if (speed >= 1 && cursorMonitor) {
+    [NSEvent removeMonitor:cursorMonitor];
+    cursorMonitor = nil;
+    CGFloat top = NSMaxY(NSScreen.screens.firstObject.frame);
+    CGWarpMouseCursorPosition(CGPointMake(cursorPosition.x, top - cursorPosition.y));
+    CGAssociateMouseAndMouseCursorPosition(true);
+  } else if (speed < 1 && !cursorMonitor) {
+    cursorPosition = NSEvent.mouseLocation;
+    CGAssociateMouseAndMouseCursorPosition(false);
+    cursorMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskMouseMoved
+                                                          handler:^NSEvent *(NSEvent *event) {
+                                                            return SlowDown(event);
+                                                          }];
+  }
+  cursorSpeed = speed;
   return info.Env().Undefined();
 }
 
@@ -284,7 +333,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("start", Napi::Function::New(env, Start));
   exports.Set("read", Napi::Function::New(env, Read));
   exports.Set("stop", Napi::Function::New(env, Stop));
-  exports.Set("moveCursor", Napi::Function::New(env, MoveCursor));
+  exports.Set("setCursorSpeed", Napi::Function::New(env, SetCursorSpeed));
   return exports;
 }
 

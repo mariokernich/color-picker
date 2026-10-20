@@ -48,10 +48,8 @@ export class Picker {
       const window = BrowserWindow.fromWebContents(event.sender)
       if (window && !window.isFocused()) window.focus()
     })
-    ipcMain.on(IPC.pickerMoveCursor, (event, x: number, y: number) => {
-      const overlay = this.overlays.find((item) => item.window.webContents === event.sender)
-      if (!overlay || !Number.isFinite(x) || !Number.isFinite(y)) return
-      sampler.moveCursor(overlay.display, x, y)
+    ipcMain.on(IPC.pickerCursorSpeed, (_event, speed: number) => {
+      if (this.overlays.length && Number.isFinite(speed)) sampler.setCursorSpeed(speed)
     })
     ipcMain.handle(
       IPC.pickerRead,
@@ -101,6 +99,7 @@ export class Picker {
     const overlays = this.overlays
     if (!overlays.length) return
     this.overlays = []
+    sampler.setCursorSpeed(1)
     if (this.live) sampler.stop()
     overlays.forEach(({ window }) => {
       if (!window.isDestroyed()) window.destroy()
@@ -156,8 +155,7 @@ export class Picker {
       pixelWidth: pixels.width,
       pixelHeight: pixels.height,
       image: image ? { width: pixels.width, height: pixels.height, data: image.toBitmap() } : null,
-      cursor: cursor ? { x: cursor.x - bounds.x, y: cursor.y - bounds.y } : null,
-      canMoveCursor: sampler.canMoveCursor()
+      cursor: cursor ? { x: cursor.x - bounds.x, y: cursor.y - bounds.y } : null
     }
     window.webContents.once('did-finish-load', () => {
       window.webContents.send(IPC.pickerInit, init)

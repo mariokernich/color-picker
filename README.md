@@ -12,8 +12,8 @@ copies colors in the format you need.
   scroll wheel or `+`/`-` to resize, `Alt` with the scroll wheel or `+`/`-` to zoom, `Shift`-click to
   pick several colors in one go.
   Every pick starts with the default loupe size and zoom; the bigger or further zoomed in the
-  loupe, the slower the mouse, so single pixels stay easy to hit. Works across multiple displays
-  and HiDPI screens.
+  loupe, the slower the mouse (macOS), so single pixels stay easy to hit. Works across multiple
+  displays and HiDPI screens.
 - **History & palettes**: every pick lands in the history and is copied to the clipboard. Palettes
   can collect picked colors automatically, and colors can be dragged between them (hold `Alt` to copy).
   Palettes export as JSON, CSS and SCSS variables, a Tailwind config or a GIMP/Inkscape palette.

@@ -16,8 +16,8 @@ interface NativeSampler {
   /** BGRA pixels of a region in display pixels, transparent outside the display. */
   read(displayId: number, x: number, y: number, width: number, height: number): Uint8Array | null
   stop(): void
-  /** Global point: display points on macOS, physical pixels of the virtual screen on Windows. */
-  moveCursor?(x: number, y: number): void
+  /** Applies this share (0-1] of the mouse movement while the app's windows get it; macOS only. */
+  setCursorSpeed?(speed: number): void
 }
 
 /** Starting gives up after this long, e.g. when macOS never answers the permission query. */
@@ -99,23 +99,8 @@ export const sampler = {
     native?.stop()
   },
 
-  /** Whether `moveCursor` works; sampling does not have to be started for it. */
-  canMoveCursor(): boolean {
-    return typeof load()?.moveCursor === 'function'
-  },
-
-  /** Moves the mouse cursor to a pixel of a display. */
-  moveCursor(display: Display, x: number, y: number): void {
-    const module = load()
-    if (!module?.moveCursor) return
-    if (process.platform === 'win32') {
-      const origin = samplerDisplay(display)
-      module.moveCursor(origin.x + Math.round(x), origin.y + Math.round(y))
-    } else {
-      module.moveCursor(
-        display.bounds.x + x / display.scaleFactor,
-        display.bounds.y + y / display.scaleFactor
-      )
-    }
+  /** Slows the mouse down (speed below 1) while the picker overlays get its movement. */
+  setCursorSpeed(speed: number): void {
+    load()?.setCursorSpeed?.(speed)
   }
 }

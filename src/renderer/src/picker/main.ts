@@ -35,9 +35,6 @@ interface PickerState {
   /** Cursor in display pixels. */
   x: number
   y: number
-  /** Cursor before rounding; the slowed-down cursor moves by fractions of a pixel. */
-  exactX: number
-  exactY: number
   visible: boolean
   size: number
   zoom: number
@@ -80,8 +77,6 @@ window.picker.onInit((init) => {
     scaleY,
     x,
     y,
-    exactX: x,
-    exactY: y,
     visible: init.cursor !== null,
     size: LOUPE_SIZE.default,
     zoom: LOUPE_ZOOM.default,
@@ -198,10 +193,8 @@ function render(): void {
 
 function moveTo(x: number, y: number): void {
   if (!state) return
-  state.exactX = Math.min(Math.max(0, x), state.init.pixelWidth - 1)
-  state.exactY = Math.min(Math.max(0, y), state.init.pixelHeight - 1)
-  state.x = Math.round(state.exactX)
-  state.y = Math.round(state.exactY)
+  state.x = Math.min(Math.max(0, Math.round(x)), state.init.pixelWidth - 1)
+  state.y = Math.min(Math.max(0, Math.round(y)), state.init.pixelHeight - 1)
   state.visible = true
   render()
 }
@@ -211,38 +204,14 @@ function resize(sizeDelta: number, zoomDelta: number): void {
   state.size = Math.min(LOUPE_SIZE.max, Math.max(LOUPE_SIZE.min, state.size + sizeDelta))
   state.zoom = Math.min(LOUPE_ZOOM.max, Math.max(LOUPE_ZOOM.min, state.zoom + zoomDelta))
   render()
-  updateCursorLock()
+  // The bigger or further zoomed in the loupe, the slower the mouse (macOS only).
+  window.picker.setCursorSpeed(cursorSpeed(state.size, state.zoom))
 }
-
-const isCursorLocked = (): boolean => document.pointerLockElement !== null
-
-/**
- * With a loupe bigger or zoomed in further than the default, the overlay locks the pointer and
- * applies only a share of the mouse movement (see `cursorSpeed`). The system cursor stays where
- * the lock started, so it is moved to the picked pixel when the lock ends.
- */
-function updateCursorLock(): void {
-  if (!state?.init.canMoveCursor) return
-  const slow = state.visible && cursorSpeed(state.size, state.zoom) < 1
-  if (slow && !isCursorLocked()) {
-    document.body
-      .requestPointerLock()
-      .catch((error) => console.warn('Slowing down the cursor is not available', error))
-  } else if (!slow && isCursorLocked()) {
-    document.exitPointerLock()
-  }
-}
-
-document.addEventListener('pointerlockchange', () => {
-  if (state && !isCursorLocked()) window.picker.moveCursor(state.x, state.y)
-})
 
 async function pick(keepOpen: boolean): Promise<void> {
   if (!state || !state.visible) return
   const hex = await currentColor()
   if (!hex || !state) return
-  // Closing ends the lock without moving the cursor along.
-  if (!keepOpen && isCursorLocked()) window.picker.moveCursor(state.x, state.y)
   window.picker.pick(hex, keepOpen)
   if (keepOpen) {
     state.picked++
@@ -269,17 +238,10 @@ function showHint(): void {
   window.setTimeout(() => hint.classList.add('fade'), 3500)
 }
 
-window.addEventListener('mousemove', (event) => {
+// Pointer events report fractions of a CSS pixel, so the slowed-down mouse reaches every pixel.
+window.addEventListener('pointermove', (event) => {
   if (!state) return
-  if (isCursorLocked()) {
-    const speed = cursorSpeed(state.size, state.zoom)
-    moveTo(
-      state.exactX + event.movementX * state.scaleX * speed,
-      state.exactY + event.movementY * state.scaleY * speed
-    )
-  } else {
-    moveTo(event.clientX * state.scaleX, event.clientY * state.scaleY)
-  }
+  moveTo(event.clientX * state.scaleX, event.clientY * state.scaleY)
 })
 
 window.addEventListener('mouseenter', () => window.picker.focus())
