@@ -19,6 +19,8 @@ npm run build          # electron-vite build to out/
 npm run icons          # regenerate all icons
 npm run native         # rebuild the native screen sampler (macOS/Windows; postinstall does it too)
 npm run dist:mas | dist:mas-dev | dist:appx   # store packages
+npm run store:screenshots   # App Store screenshots (scripts/store, see docs/STORE.md)
+npm run store -- status     # App Store Connect: status|metadata|screenshots|build|submit
 ```
 
 Run `npm run typecheck && npm test` before every commit.

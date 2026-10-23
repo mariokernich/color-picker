@@ -54,6 +54,38 @@ Things to keep in mind:
    `https://mariokernich.github.io/color-picker/privacy.html`, support/marketing URL:
    `https://mariokernich.github.io/color-picker/` (sources in `site/`).
 
+### Listing, screenshots and submission (`scripts/store/`)
+
+The store texts (EN + DE name, subtitle, description, keywords, promotional text, optional
+`whatsNew` for updates, screenshot captions) and the review notes live in
+`scripts/store/listing.json`. Edit them there, not in App Store Connect.
+
+```bash
+npm run store:screenshots   # dist/store-screenshots/<locale>-<n>.png, 2880×1800
+```
+
+This renders the real app UI with headless Chrome (Google Chrome must be installed, or set
+`CHROME_PATH`):
+- the built popover with the browser mock data (`src/renderer/src/lib/mockApi.ts`);
+- the real picker overlay drawing the loupe over a made-up website (`scene.html`).
+
+`compose.html` then puts each capture under its caption. Check the images before uploading them.
+
+The App Store Connect API key (role *App Manager*) does the rest. Set
+`ASC_KEY_ID` and `ASC_ISSUER`; the key file is read from
+`~/.appstoreconnect/private_keys/AuthKey_<ASC_KEY_ID>.p8`:
+
+```bash
+npm run store -- status        # read-only overview
+npm run store -- metadata      # version number from package.json, texts, URLs, review notes
+npm run store -- screenshots   # replaces the screenshots with dist/store-screenshots
+npm run store -- build         # after upload and processing: attaches the build of this version
+npm run store -- submit --yes  # submits the version for review
+```
+
+App Privacy, pricing, the age rating and the agreements are set once in the browser and are not
+part of these scripts.
+
 ### Build & upload
 
 ```bash
@@ -70,7 +102,8 @@ xcrun altool --upload-package dist/mas-universal/ChipDeck-<version>-universal.pk
 ```
 
 Then answer export compliance for the build (no non-exempt encryption: the app has no network
-access), select it in the app version and submit it.
+access), select it in the app version and submit it (`npm run store -- build` and
+`npm run store -- submit --yes` do both).
 
 Review notes to include (the submitted ones also explain the slower mouse and "Watch clipboard"):
 

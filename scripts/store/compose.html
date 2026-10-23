@@ -1,0 +1,144 @@
+<!doctype html>
+<!-- One App Store screenshot: caption from listing.json over the rendered app UI.
+     Query: ?slide=1..5&locale=en-US|de-DE -->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      html,
+      body {
+        width: 1440px;
+        height: 900px;
+        overflow: hidden;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #1b1838;
+        background:
+          radial-gradient(1200px 700px at 15% 0%, #ffe3f1 0, transparent 60%),
+          radial-gradient(1000px 700px at 100% 100%, #d9e4ff 0, transparent 60%),
+          linear-gradient(160deg, #f7f3ff, #eef0ff);
+      }
+      body.dark {
+        color: #f4f2ff;
+        background:
+          radial-gradient(1100px 700px at 10% 0%, #3b1f6e 0, transparent 60%),
+          radial-gradient(1000px 700px at 100% 100%, #1d2f6b 0, transparent 60%), #121022;
+      }
+      .head {
+        position: absolute;
+        top: 58px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        padding: 0 120px;
+      }
+      h1 {
+        font-size: 62px;
+        font-weight: 800;
+        letter-spacing: -1.6px;
+        line-height: 1.05;
+      }
+      h1 em {
+        font-style: normal;
+        background: linear-gradient(90deg, #f72585, #7209b7 50%, #4361ee);
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+      .dark h1 em {
+        background: linear-gradient(90deg, #ff7ac6, #b38bff 50%, #7ea2ff);
+        -webkit-background-clip: text;
+      }
+      p {
+        font-size: 24px;
+        line-height: 1.4;
+        margin-top: 16px;
+        opacity: 0.72;
+      }
+      .stage {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 250px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 56px;
+      }
+      .stage.single {
+        top: 215px;
+      }
+      .pop {
+        width: 372px;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow:
+          0 40px 80px rgba(30, 15, 80, 0.28),
+          0 0 0 1px rgba(0, 0, 0, 0.06);
+      }
+      .dark .pop {
+        box-shadow:
+          0 40px 80px rgba(0, 0, 0, 0.55),
+          0 0 0 1px rgba(255, 255, 255, 0.08);
+      }
+      .screen {
+        width: 1080px;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow:
+          0 40px 90px rgba(30, 15, 80, 0.3),
+          0 0 0 1px rgba(0, 0, 0, 0.08);
+      }
+      img {
+        display: block;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="head">
+      <h1 id="title"></h1>
+      <p id="subtitle"></p>
+    </div>
+    <div class="stage" id="stage"></div>
+    <script>
+      // Raw captures per slide (see screenshots.mjs); "screen" shows a full display.
+      const IMAGES = {
+        1: [['loupe.png', 'screen']],
+        2: [['home-light.png'], ['palette-light.png']],
+        3: [['color-light.png'], ['color-dark.png']],
+        4: [['contrast-dark.png']],
+        5: [['home-light.png'], ['home-dark.png']]
+      }
+      const DARK_SLIDES = [4]
+
+      window.ready = (async () => {
+        const query = new URLSearchParams(location.search)
+        const slide = Number(query.get('slide'))
+        const listing = await (await fetch('/listing.json')).json()
+        const caption = listing.locales[query.get('locale')].screenshots[slide - 1]
+        document.body.classList.toggle('dark', DARK_SLIDES.includes(slide))
+        // Captions mark the highlighted words with <em>.
+        document.getElementById('title').innerHTML = caption.title
+        document.getElementById('subtitle').textContent = caption.subtitle
+        const stage = document.getElementById('stage')
+        const loads = IMAGES[slide].map(([file, kind]) => {
+          const box = document.createElement('div')
+          box.className = kind ?? 'pop'
+          if (kind === 'screen') stage.classList.add('single')
+          const image = new Image()
+          image.src = `/raw/${file}`
+          box.append(image)
+          stage.append(box)
+          return image.decode()
+        })
+        await Promise.all(loads)
+      })()
+    </script>
+  </body>
+</html>

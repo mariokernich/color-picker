@@ -231,10 +231,10 @@ start was checked (no sandbox violations in the log).
       explain the slower mouse and "Watch clipboard").
 - [x] Screenshots 2880×1800, 5 per language: real app UI (the built renderer with the browser mock
       data, and the real picker code drawing the loupe over a made-up website) rendered by headless
-      Chrome, with a caption on a gradient. The generator scripts are not in the repository yet
-      (section 7).
+      Chrome, with a caption on a gradient: `npm run store:screenshots` (see `docs/STORE.md`).
 
-The texts, screenshots, build and submission were set through the **App Store Connect API**
+The texts (`scripts/store/listing.json`), screenshots, build and submission were set through the
+**App Store Connect API** (`npm run store -- <command>`)
 with the key that has the *App Manager* role (`~/.appstoreconnect/private_keys/`; key ID and
 issuer ID on App Store Connect → Users and Access → Integrations). Only App Privacy and the
 agreements need the browser.
@@ -291,9 +291,8 @@ xcrun altool --upload-package dist/mas-universal/ChipDeck-<version>-universal.pk
 - [x] Delete the outdated draft releases `v0.1.0-build.1/3/4/5` (done 2026-10-19).
 - [x] Commit the `package-lock.json` update with `"hasInstallScript": true` (2026-10-20).
 - [x] Delete merged branches, including `feat/color-picker-app` (2026-10-21).
-- [ ] 🤖 Put the App Store screenshot generator (headless Chrome via the DevTools protocol) and
-      the App Store Connect API helper into `scripts/store/`, so the next update can regenerate
-      the screenshots and texts.
+- [x] App Store screenshot generator and App Store Connect API scripts in `scripts/store/`
+      (`npm run store:screenshots`, `npm run store -- <command>`, see `docs/STORE.md`).
 - [ ] 🧑 Decide: should `release.yml` delete older drafts automatically (e.g. keep the newest 3)?
       Otherwise every push to `main` adds a draft. 🤖 can add a cleanup step using `gh release
       delete` with the workflow token.
