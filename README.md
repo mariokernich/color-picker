@@ -77,7 +77,7 @@ src/
     picker.ts     Full-screen overlay windows per display, live or with a frozen capture
     sampler.ts    Loads the native screen sampler
     windows.ts    Popover window and its placement next to the tray icon
-    tray.ts       Menu bar / tray icon and context menu
+    tray.ts       Menu bar / tray icon (left click picks, right click opens the popover)
     shortcuts.ts  Global shortcuts
   preload/    Typed, sandboxed bridges (`window.api`, `window.picker`)
   renderer/   React UI for the popover and a lightweight canvas UI for the picker overlay

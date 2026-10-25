@@ -57,7 +57,7 @@ export function SettingsView() {
               onChange={(freezeScreen) => set({ freezeScreen })}
             />
           </Row>
-          <Row label={`Clicking the ${trayName}`}>
+          <Row label={`Clicking the ${trayName}`} hint="A right click does the other">
             <Segmented
               label={`Clicking the ${trayName}`}
               value={settings.trayClickAction}

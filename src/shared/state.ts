@@ -6,7 +6,7 @@ export const DEFAULT_SETTINGS: Settings = {
   formatId: DEFAULT_FORMAT_ID,
   pickerShortcut: 'CommandOrControl+Alt+Shift+C',
   popoverShortcut: 'CommandOrControl+Alt+Shift+M',
-  trayClickAction: 'popover',
+  trayClickAction: 'picker',
   copyOnPick: true,
   freezeScreen: false,
   watchClipboard: false,

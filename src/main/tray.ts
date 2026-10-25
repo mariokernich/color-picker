@@ -1,5 +1,5 @@
 import { join } from 'node:path'
-import { Menu, MenuItemConstructorOptions, Tray, nativeImage, nativeTheme } from 'electron'
+import { Tray, nativeImage, nativeTheme } from 'electron'
 import { PRODUCT } from '../shared/product'
 
 const isMac = process.platform === 'darwin'
@@ -10,11 +10,7 @@ export function resourcePath(name: string): string {
 
 export interface TrayHandlers {
   onClick: () => void
-  pick: () => void
-  open: () => void
-  contrast: () => void
-  settings: () => void
-  quit: () => void
+  onRightClick: () => void
 }
 
 /**
@@ -36,19 +32,8 @@ export function createTray(handlers: TrayHandlers): Tray {
   tray.setToolTip(PRODUCT.name)
   if (!isMac) nativeTheme.on('updated', () => tray.setImage(trayIcon()))
 
-  const template: MenuItemConstructorOptions[] = [
-    { label: 'Pick Color', click: handlers.pick },
-    { label: `Open ${PRODUCT.name}`, click: handlers.open },
-    { label: 'Contrast Checker', click: handlers.contrast },
-    { type: 'separator' },
-    { label: isMac ? 'Settings…' : 'Settings', click: handlers.settings },
-    { type: 'separator' },
-    { label: `Quit ${PRODUCT.name}`, click: handlers.quit }
-  ]
-  const menu = Menu.buildFromTemplate(template)
-
-  // The context menu is opened manually so a left click keeps its own action on macOS.
+  // No context menu: the popover has everything it offered (contrast, settings, quit).
   tray.on('click', handlers.onClick)
-  tray.on('right-click', () => tray.popUpContextMenu(menu))
+  tray.on('right-click', handlers.onRightClick)
   return tray
 }
