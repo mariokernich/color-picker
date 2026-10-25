@@ -1,6 +1,6 @@
 # Handoff: Current State & Next Steps
 
-_Last updated: 2026-10-21_
+_Last updated: 2026-10-25_
 
 This document is for the next developer or AI assistant working on this repository on a local Mac
 or Windows machine. Read it together with [`CLAUDE.md`](../CLAUDE.md) (conventions),
@@ -10,16 +10,16 @@ Legend: 🧑 = needs the owner (accounts, money, legal decisions) · 🤖 = an a
 🌐 = an assistant with browser access (e.g. Claude in Chrome) can do it in the owner's signed-in
 browser, with the owner confirming.
 
-## 0. Status: `v0.1.3` released, Mac App Store review pending (2026-10-21)
+## 0. Status: `v0.1.4` released, Mac App Store review pending (2026-10-25)
 
-- **GitHub:** `v0.1.3` is public and marked "Latest":
-  https://github.com/mariokernich/color-picker/releases/tag/v0.1.3 (`v0.1.2` came out a day
-  earlier with the same steps).
-- **Mac App Store:** version 0.1.3 (build 0.1.3, universal) was submitted on 2026-10-21 and is
-  *Waiting for Review*, with **manual release**. After approval, 🧑 releases it in App Store
-  Connect (Distribution → macOS App → *Release This Version*). Then 🤖 replaces the "Coming
-  soon" button on the website (section 7). If Apple rejects it, read the message in App Store
-  Connect → App Review, fix it on a `fix/*` branch, bump the version and upload again (5.5).
+- **GitHub:** `v0.1.4` (new icon) is public and marked "Latest":
+  https://github.com/mariokernich/color-picker/releases/tag/v0.1.4.
+- **Mac App Store:** version 0.1.4 (build 0.1.4, universal, with the new icon) was submitted on
+  2026-10-25 and is *Waiting for Review*, with **manual release**. It replaced 0.1.3, which was
+  taken out of review for the new icon. After approval, 🧑 releases it in App Store Connect
+  (Distribution → macOS App → *Release This Version*). Then 🤖 replaces the "Coming soon" button
+  on the website (section 7). If Apple rejects it, read the message in App Store Connect →
+  App Review, fix it on a `fix/*` branch, bump the version and upload again (5.5).
 
 How a public GitHub release is made; repeat it for the next version:
 
