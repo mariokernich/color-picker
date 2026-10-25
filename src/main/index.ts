@@ -15,7 +15,14 @@ import { EXPORT_FORMATS, exportPalette, slugify } from '../shared/export'
 import { formatColor } from '../shared/formats'
 import { PRODUCT } from '../shared/product'
 import { Action } from '../shared/state'
-import type { AppData, CollectionId, ExportFormat, PlatformInfo, ScreenAccess } from '../shared/types'
+import type {
+  AppData,
+  CollectionId,
+  ExportFormat,
+  PlatformInfo,
+  ScreenAccess,
+  TrayClickAction
+} from '../shared/types'
 import { ClipboardWatcher } from './clipboard'
 import { Picker } from './picker'
 import { Shortcuts } from './shortcuts'
@@ -115,16 +122,15 @@ function main(): void {
     }
   }
 
+  const runTrayAction = (action: TrayClickAction): void => {
+    if (action === 'picker') void startPicker()
+    else togglePopover()
+  }
+  // A right click does what a left click does not.
   const tray = createTray({
-    onClick: () => {
-      if (store.state.settings.trayClickAction === 'picker') void startPicker()
-      else togglePopover()
-    },
-    pick: () => void startPicker(),
-    open: () => showPopover('home'),
-    contrast: () => showPopover('contrast'),
-    settings: () => showPopover('settings'),
-    quit: () => app.quit()
+    onClick: () => runTrayAction(store.state.settings.trayClickAction),
+    onRightClick: () =>
+      runTrayAction(store.state.settings.trayClickAction === 'picker' ? 'popover' : 'picker')
   })
 
   const shortcuts = new Shortcuts({
