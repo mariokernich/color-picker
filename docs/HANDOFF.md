@@ -18,12 +18,11 @@ browser, with the owner confirming.
   2026-10-25, went into review on 2026-11-02, was approved the night after and released by hand
   on 2026-11-03 in 175 countries or regions (*Ready for Distribution*). It replaced 0.1.3, which
   was taken out of review for the new icon; taking a version out of review appears to restart the
-  wait, so avoid it. Listing: https://apps.apple.com/app/id6824296695 (it answered 404 right
-  after the release, while Apple published it).
-- **App icon in App Store Connect:** the build's *Included Assets* show the new icon; the small
-  icon next to the app name still showed the old one from 0.1.3 at release time. macOS has no
-  upload field for it: the icon always comes from the build. 🧑 Check that the store page shows
-  the new icon.
+  wait, so avoid it. Listing: https://apps.apple.com/app/id6824296695 (404 right after the
+  release, live the same morning at 9.99 USD).
+- **App icon:** the store page shows the new icon. In App Store Connect the small icon next to
+  the app name still showed the old one from 0.1.3 at release time; macOS has no upload field for
+  it, the icon always comes from the build.
 - **Website:** the Mac App Store button links to the listing (section 7). The Microsoft Store
   button still says "Coming soon".
 
