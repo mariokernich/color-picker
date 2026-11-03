@@ -1,6 +1,6 @@
 # Handoff: Current State & Next Steps
 
-_Last updated: 2026-10-25_
+_Last updated: 2026-11-03_
 
 This document is for the next developer or AI assistant working on this repository on a local Mac
 or Windows machine. Read it together with [`CLAUDE.md`](../CLAUDE.md) (conventions),
@@ -10,16 +10,21 @@ Legend: 🧑 = needs the owner (accounts, money, legal decisions) · 🤖 = an a
 🌐 = an assistant with browser access (e.g. Claude in Chrome) can do it in the owner's signed-in
 browser, with the owner confirming.
 
-## 0. Status: `v0.1.4` released, Mac App Store review pending (2026-10-25)
+## 0. Status: `v0.1.4` released on GitHub and in the Mac App Store (2026-11-03)
 
 - **GitHub:** `v0.1.4` (new icon) is public and marked "Latest":
   https://github.com/mariokernich/color-picker/releases/tag/v0.1.4.
 - **Mac App Store:** version 0.1.4 (build 0.1.4, universal, with the new icon) was submitted on
-  2026-10-25 and is *Waiting for Review*, with **manual release**. It replaced 0.1.3, which was
-  taken out of review for the new icon. After approval, 🧑 releases it in App Store Connect
-  (Distribution → macOS App → *Release This Version*). Then 🤖 replaces the "Coming soon" button
-  on the website (section 7). If Apple rejects it, read the message in App Store Connect →
-  App Review, fix it on a `fix/*` branch, bump the version and upload again (5.5).
+  2026-10-25, went into review on 2026-11-02, was approved the night after and released by hand
+  on 2026-11-03 in 175 countries or regions (*Ready for Distribution*). It replaced 0.1.3, which
+  was taken out of review for the new icon; taking a version out of review appears to restart the
+  wait, so avoid it. Listing: https://apps.apple.com/app/id6824296695 (404 right after the
+  release, live the same morning at 9.99 USD).
+- **App icon:** the store page shows the new icon. In App Store Connect the small icon next to
+  the app name still showed the old one from 0.1.3 at release time; macOS has no upload field for
+  it, the icon always comes from the build.
+- **Website:** the Mac App Store button links to the listing (section 7). The Microsoft Store
+  button still says "Coming soon".
 
 How a public GitHub release is made; repeat it for the next version:
 
@@ -102,7 +107,8 @@ How a public GitHub release is made; repeat it for the next version:
 - Privacy policy (DE + EN): https://mariokernich.github.io/color-picker/privacy.html — linked from
   the app (`PRODUCT.privacyUrl` in `src/shared/product.ts`).
 - Imprint: https://mariokernich.github.io/color-picker/imprint.html
-- The two store buttons on the landing page show "Coming soon" until the listings are live.
+- The Mac App Store button links to the listing; the Microsoft Store button shows "Coming soon"
+  until that listing is live.
 
 ### Not verified yet
 
@@ -298,8 +304,9 @@ xcrun altool --upload-package dist/mas-universal/ChipDeck-<version>-universal.pk
       delete` with the workflow token.
 - [ ] 🤖 Bump the GitHub Actions to Node 24 compatible majors (CI warns that `actions/checkout@v4`,
       `actions/download-artifact@v4` and `softprops/action-gh-release@v2` run on deprecated Node 20).
-- [ ] 🤖 When the store listings are live: replace the "Coming soon" buttons in `site/index.html`
-      (set `href`, remove `aria-disabled`).
+- [x] Mac App Store button in `site/index.html` links to the listing (2026-11-03).
+- [ ] 🤖 When the Microsoft Store listing is live: replace its "Coming soon" button in
+      `site/index.html` (set `href`, remove `aria-disabled`).
 - [ ] 🤖 Optional: ESLint + Prettier scripts (`.prettierrc` exists, no lint script yet).
 - [ ] 🤖 Optional: German UI localization (UI is English only; store listings can still be German).
 
