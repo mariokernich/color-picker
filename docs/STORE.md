@@ -57,8 +57,8 @@ Things to keep in mind:
 ### Listing, screenshots and submission (`scripts/store/`)
 
 The store texts (EN + DE name, subtitle, description, keywords, promotional text, optional
-`whatsNew` for updates, screenshot captions) and the review notes live in
-`scripts/store/listing.json`. Edit them there, not in App Store Connect.
+`whatsNew` for updates, screenshot captions), the review notes and the release type (`MANUAL` or
+`AFTER_APPROVAL`) live in `scripts/store/listing.json`. Edit them there, not in App Store Connect.
 
 ```bash
 npm run store:screenshots   # dist/store-screenshots/<locale>-<n>.png, 2880×1800
