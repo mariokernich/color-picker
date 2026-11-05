@@ -1,6 +1,6 @@
 # Handoff: Current State & Next Steps
 
-_Last updated: 2026-11-03_
+_Last updated: 2026-11-05_
 
 This document is for the next developer or AI assistant working on this repository on a local Mac
 or Windows machine. Read it together with [`CLAUDE.md`](../CLAUDE.md) (conventions),
@@ -10,19 +10,20 @@ Legend: 🧑 = needs the owner (accounts, money, legal decisions) · 🤖 = an a
 🌐 = an assistant with browser access (e.g. Claude in Chrome) can do it in the owner's signed-in
 browser, with the owner confirming.
 
-## 0. Status: `v0.1.4` released on GitHub and in the Mac App Store (2026-11-03)
+## 0. Status: `v0.1.5` released on GitHub, App Store update in review (2026-11-05)
 
-- **GitHub:** `v0.1.4` (new icon) is public and marked "Latest":
-  https://github.com/mariokernich/color-picker/releases/tag/v0.1.4.
-- **Mac App Store:** version 0.1.4 (build 0.1.4, universal, with the new icon) was submitted on
-  2026-10-25, went into review on 2026-11-02, was approved the night after and released by hand
-  on 2026-11-03 in 175 countries or regions (*Ready for Distribution*). It replaced 0.1.3, which
-  was taken out of review for the new icon; taking a version out of review appears to restart the
-  wait, so avoid it. Listing: https://apps.apple.com/app/id6824296695 (404 right after the
-  release, live the same morning at 9.99 USD).
-- **App icon:** the store page shows the new icon. In App Store Connect the small icon next to
-  the app name still showed the old one from 0.1.3 at release time; macOS has no upload field for
-  it, the icon always comes from the build.
+- **GitHub:** `v0.1.5` (left click on the menu bar icon picks, right click opens the popover) is
+  public and marked "Latest": https://github.com/mariokernich/color-picker/releases/tag/v0.1.5.
+- **Mac App Store:** 0.1.4 (new icon) is live since 2026-11-03 in 175 countries or regions:
+  https://apps.apple.com/app/id6824296695. The update **0.1.5** (build 0.1.5, universal, "What's
+  New" in EN + DE) was submitted on 2026-11-05 and is *Waiting for Review*, with **manual
+  release**: after approval 🧑 releases it in App Store Connect (Distribution → macOS App →
+  *Release This Version*). Avoid taking a version out of review; it appears to restart the wait.
+  If Apple rejects it, read App Store Connect → App Review, fix it on a `fix/*` branch, bump the
+  version and run the store steps again (`docs/STORE.md`).
+- **App icon:** the store page shows the new icon. The small icon next to the app name in App
+  Store Connect may still show the old one for a while; macOS has no upload field for it, the
+  icon always comes from the build.
 - **Website:** the Mac App Store button links to the listing (section 7). The Microsoft Store
   button still says "Coming soon".
 
