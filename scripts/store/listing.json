@@ -1,5 +1,6 @@
 {
   "appId": "6824296695",
+  "releaseType": "MANUAL",
   "urls": {
     "support": "https://mariokernich.github.io/color-picker/",
     "marketing": "https://mariokernich.github.io/color-picker/",
@@ -34,7 +35,8 @@
           "title": "Lives in your <em>menu bar</em>",
           "subtitle": "Light and dark mode, a global shortcut and no Dock icon. No account, no tracking."
         }
-      ]
+      ],
+      "whatsNew": "• A left click on the menu bar icon now starts the picker right away; a right click opens ChipDeck."
     },
     "de-DE": {
       "name": "ChipDeck: Farbpipette",
@@ -63,7 +65,8 @@
           "title": "Wohnt in der <em>Menüleiste</em>",
           "subtitle": "Hell und dunkel, globales Tastenkürzel, kein Dock-Symbol. Kein Konto, kein Tracking."
         }
-      ]
+      ],
+      "whatsNew": "• Ein Linksklick auf das Menüleisten-Symbol startet jetzt direkt die Farbaufnahme, ein Rechtsklick öffnet ChipDeck."
     }
   }
 }

@@ -105,16 +105,21 @@ async function metadata() {
       '/v1/appStoreVersions',
       resource(
         'appStoreVersions',
-        { platform: 'MAC_OS', versionString: version },
+        { platform: 'MAC_OS', versionString: version, releaseType: listing.releaseType },
         { app: ['apps', APP] }
       )
     )
     current = created.data
-  } else if (current.attributes.versionString !== version) {
+  } else {
     await asc(
       'PATCH',
       `/v1/appStoreVersions/${current.id}`,
-      resource('appStoreVersions', { versionString: version }, {}, current.id)
+      resource(
+        'appStoreVersions',
+        { versionString: version, releaseType: listing.releaseType },
+        {},
+        current.id
+      )
     )
   }
   const info = await editableAppInfo()
