@@ -269,32 +269,47 @@ async function submit() {
   if (!process.argv.includes('--yes')) {
     throw new Error('This submits the version to App Review. Run it with --yes.')
   }
-  const current = await editableVersion()
-  if (!current) throw new Error('No editable version.')
-  const submission = await asc(
-    'POST',
-    '/v1/reviewSubmissions',
-    resource('reviewSubmissions', { platform: 'MAC_OS' }, { app: ['apps', APP] })
-  )
-  const id = submission.data.id
-  await asc(
-    'POST',
-    '/v1/reviewSubmissionItems',
-    resource(
-      'reviewSubmissionItems',
-      {},
-      {
-        reviewSubmission: ['reviewSubmissions', id],
-        appStoreVersion: ['appStoreVersions', current.id]
-      }
+  // An interrupted run leaves a draft submission (READY_FOR_REVIEW); finish that one.
+  const filter = `filter[app]=${APP}&filter[platform]=MAC_OS&filter[state]=READY_FOR_REVIEW`
+  const { data: drafts } = await asc('GET', `/v1/reviewSubmissions?${filter}`)
+  let id = drafts[0]?.id
+  if (!id) {
+    const current = await editableVersion()
+    if (!current) throw new Error('No editable version.')
+    const submission = await asc(
+      'POST',
+      '/v1/reviewSubmissions',
+      resource('reviewSubmissions', { platform: 'MAC_OS' }, { app: ['apps', APP] })
     )
-  )
-  await asc(
-    'PATCH',
-    `/v1/reviewSubmissions/${id}`,
-    resource('reviewSubmissions', { submitted: true }, {}, id)
-  )
-  console.log(`Version ${current.attributes.versionString} submitted for review.`)
+    id = submission.data.id
+    await asc(
+      'POST',
+      '/v1/reviewSubmissionItems',
+      resource(
+        'reviewSubmissionItems',
+        {},
+        {
+          reviewSubmission: ['reviewSubmissions', id],
+          appStoreVersion: ['appStoreVersions', current.id]
+        }
+      )
+    )
+  }
+  // Right after adding the version, App Store Connect may not accept the submission yet.
+  for (let attempt = 1; ; attempt++) {
+    try {
+      await asc(
+        'PATCH',
+        `/v1/reviewSubmissions/${id}`,
+        resource('reviewSubmissions', { submitted: true }, {}, id)
+      )
+      break
+    } catch (error) {
+      if (attempt === 5) throw error
+      await new Promise((resolve) => setTimeout(resolve, 5000))
+    }
+  }
+  console.log(`Version ${version} submitted for review.`)
 }
 
 const commands = { status, metadata, screenshots, build, submit }
