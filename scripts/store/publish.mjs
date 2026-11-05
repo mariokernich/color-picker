@@ -36,7 +36,12 @@ async function editableVersion() {
 
 /** Whether a version is in the store already, so this one is an update. */
 async function isUpdate() {
-  const states = 'READY_FOR_SALE,READY_FOR_DISTRIBUTION,REMOVED_FROM_SALE'
+  const states = [
+    'READY_FOR_SALE',
+    'REMOVED_FROM_SALE',
+    'DEVELOPER_REMOVED_FROM_SALE',
+    'REPLACED_WITH_NEW_VERSION'
+  ].join(',')
   const { data } = await asc(
     'GET',
     `/v1/apps/${APP}/appStoreVersions?filter[platform]=MAC_OS&filter[appStoreState]=${states}`
