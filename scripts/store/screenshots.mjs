@@ -2,6 +2,8 @@
 // the built popover renderer with its browser mock data, and the real picker overlay drawing
 // the loupe over scene.html. Run `npm run store:screenshots` (builds the renderer first).
 // Output: dist/store-screenshots/<locale>-<n>.png, raw captures in dist/store-screenshots/raw/.
+// With --windows (`npm run store:screenshots:windows`) the UI shows the Windows shortcut labels,
+// for the Microsoft Store: dist/store-screenshots-windows/.
 import { createReadStream, existsSync, mkdirSync, readFileSync, rmSync } from 'node:fs'
 import { once } from 'node:events'
 import { createServer } from 'node:http'
@@ -13,7 +15,13 @@ import { launch } from './cdp.mjs'
 const here = dirname(fileURLToPath(import.meta.url))
 const root = join(here, '..', '..')
 const renderer = join(root, 'out', 'renderer')
-const output = join(root, 'dist', 'store-screenshots')
+const windows = process.argv.includes('--windows')
+const output = join(root, 'dist', windows ? 'store-screenshots-windows' : 'store-screenshots')
+// The mock API and the picker take the platform from the query and the user agent.
+const query = windows ? '?platform=win32' : ''
+const WINDOWS_AGENT =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ' +
+  'Chrome/140.0.0.0 Safari/537.36'
 const raw = join(output, 'raw')
 const listing = JSON.parse(readFileSync(join(here, 'listing.json'), 'utf8'))
 
@@ -52,18 +60,18 @@ async function popover(page, url) {
   for (const dark of [false, true]) {
     const theme = dark ? 'dark' : 'light'
     await page.viewport(340, 560, 3, dark)
-    await page.goto(`${url}/renderer/index.html`, 1200)
+    await page.goto(`${url}/renderer/index.html${query}`, 1200)
     await page.shot(join(raw, `home-${theme}.png`))
     // The color editor opens on a double-click on a history swatch.
     await page.eval(`document.querySelectorAll('.swatch-grid [title]')[1]
       .dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))`)
     await page.sleep(700)
     await page.shot(join(raw, `color-${theme}.png`))
-    await page.goto(`${url}/renderer/index.html`, 1200)
+    await page.goto(`${url}/renderer/index.html${query}`, 1200)
     await page.eval(`document.querySelector('.palette-row__main').click()`)
     await page.sleep(700)
     await page.shot(join(raw, `palette-${theme}.png`))
-    await page.goto(`${url}/renderer/index.html?route=contrast`, 1200)
+    await page.goto(`${url}/renderer/index.html${query ? `${query}&` : '?'}route=contrast`, 1200)
     // Dark text on white passes every level; pick it from the recent colors.
     await page.eval(`[...document.querySelectorAll('[aria-label]')]
       .find((element) => /#2B2D42/i.test(element.getAttribute('aria-label'))).click()`)
@@ -145,6 +153,7 @@ const server = await serve()
 const url = `http://127.0.0.1:${server.address().port}`
 const profile = join(tmpdir(), `chipdeck-store-${process.pid}`)
 const { chrome, page } = await launch(profile)
+if (windows) await page.userAgent(WINDOWS_AGENT, 'Win32')
 try {
   await popover(page, url)
   await loupe(page, url)
