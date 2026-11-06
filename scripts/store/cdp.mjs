@@ -84,6 +84,9 @@ async function connect(url) {
         features: [{ name: 'prefers-color-scheme', value: dark ? 'dark' : 'light' }]
       })
     },
+    async userAgent(userAgent, platform) {
+      await send('Emulation.setUserAgentOverride', { userAgent, platform })
+    },
     async inject(source) {
       return send('Page.addScriptToEvaluateOnNewDocument', { source })
     },

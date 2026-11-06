@@ -62,11 +62,12 @@ nsis:
   shortcutName: ChipDeck
 
 appx:
-  # Values from Partner Center > Product identity.
-  identityName: TODO.ColorPicker
-  publisher: CN=TODO-PUBLISHER-ID
+  # Values from Partner Center > Product identity (Store ID 9N8VGKW7M18P). The display name must
+  # be the name reserved in Partner Center.
+  identityName: MarioKernich.ChipDeckColorPicker
+  publisher: CN=5F9A62F5-C953-4CA0-A263-EDA7D3419B3C
   publisherDisplayName: Mario Kernich
-  displayName: ChipDeck
+  displayName: 'ChipDeck: Color Picker'
   applicationId: ColorPicker
   backgroundColor: transparent
   showNameOnTiles: false
