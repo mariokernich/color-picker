@@ -68,5 +68,61 @@
       ],
       "whatsNew": "• Ein Linksklick auf das Menüleisten-Symbol startet jetzt direkt die Farbaufnahme, ein Rechtsklick öffnet ChipDeck."
     }
+  },
+  "microsoftStore": {
+    "storeId": "9N8VGKW7M18P",
+    "copyright": "© 2026 Mario Kernich",
+    "locales": {
+      "en-US": {
+        "shortDescription": "Pick any pixel on any screen with a magnifying loupe and copy it as Hex, RGB, HSL, Tailwind and 13 more formats. Palettes and a WCAG contrast checker included.",
+        "description": "ChipDeck picks any color on your screen: fast, precise and without getting in your way.\n\nPress a shortcut or click the tray icon, aim the magnifying loupe at any pixel on any display and click. The color is in your clipboard in exactly the format you need.\n\nPICK\n• Live loupe: videos and animations keep running while you pick\n• Pixel-precise loupe with a zoomed pixel grid, on every display including high DPI\n• The bigger the loupe, the slower the mouse, so every single pixel is easy to hit\n• Arrow keys move one pixel at a time\n• Global shortcut that works from any app\n\nCOPY IN 17 FORMATS\nCSS Hex, RGB, HSL and OKLCH, SwiftUI, UIColor, NSColor, Android XML and Compose, Flutter, .NET, Java, Unity, OpenGL and more.\n\nORGANIZE\n• History of every picked color\n• Optional: colors you copy in other apps land in the history too\n• Palettes with drag and drop\n• Export palettes as JSON, CSS, SCSS, Tailwind or GIMP palette\n\nREFINE AND CHECK\n• Color editor with RGB, HSL and HSB values and opacity\n• WCAG 2 contrast checker with AA and AAA results for text and UI components\n\nPRIVATE BY DESIGN\nNo account, no tracking, no network access. Your colors stay on your PC.\n\nChipDeck lives in the system tray: a left click picks a color, a right click opens ChipDeck. One-time purchase, no subscription.",
+        "features": [
+          "Live magnifying loupe with a pixel grid on every display",
+          "The bigger the loupe, the slower the mouse, so every pixel is easy to hit",
+          "Global shortcut (Ctrl+Alt+Shift+C) from any app",
+          "Copy as Hex, RGB, HSL, OKLCH, SwiftUI, Android, Flutter, .NET and more (17 formats)",
+          "Color history, optionally with colors copied in other apps",
+          "Palettes with drag and drop, export as JSON, CSS, SCSS, Tailwind or GIMP palette",
+          "Color editor with RGB, HSL, HSB and opacity",
+          "WCAG 2 contrast checker (AA and AAA)",
+          "Light and dark mode",
+          "No account, no tracking, no network access"
+        ],
+        "searchTerms": [
+          "color picker",
+          "eyedropper",
+          "hex color",
+          "palette",
+          "contrast checker",
+          "pipette",
+          "screen color"
+        ]
+      },
+      "de-DE": {
+        "shortDescription": "Jedes Pixel auf jedem Bildschirm mit der Lupe aufnehmen und als Hex, RGB, HSL, Tailwind und 13 weitere Formate kopieren. Mit Paletten und WCAG-Kontrastprüfung.",
+        "description": "ChipDeck nimmt jede Farbe auf deinem Bildschirm auf: schnell, pixelgenau und ohne im Weg zu sein.\n\nKürzel drücken oder auf das Symbol im Infobereich der Taskleiste klicken, die Lupe auf ein beliebiges Pixel auf einem beliebigen Bildschirm richten und klicken. Die Farbe liegt sofort im gewünschten Format in der Zwischenablage.\n\nAUFNEHMEN\n• Live-Lupe: Videos und Animationen laufen beim Aufnehmen weiter\n• Pixelgenaue Lupe mit vergrößertem Pixelraster, auf jedem Bildschirm inklusive hoher Auflösung\n• Je größer die Lupe, desto langsamer die Maus, damit jedes einzelne Pixel leicht zu treffen ist\n• Pfeiltasten bewegen um genau ein Pixel\n• Globales Tastenkürzel, das in jeder App funktioniert\n\nKOPIEREN IN 17 FORMATEN\nCSS Hex, RGB, HSL und OKLCH, SwiftUI, UIColor, NSColor, Android XML und Compose, Flutter, .NET, Java, Unity, OpenGL und mehr.\n\nORGANISIEREN\n• Verlauf aller aufgenommenen Farben\n• Optional: Farben, die du in anderen Apps kopierst, landen ebenfalls im Verlauf\n• Paletten mit Drag & Drop\n• Export von Paletten als JSON, CSS, SCSS, Tailwind oder GIMP-Palette\n\nVERFEINERN UND PRÜFEN\n• Farbeditor mit RGB-, HSL- und HSB-Werten und Deckkraft\n• WCAG-2-Kontrastprüfung mit AA- und AAA-Ergebnis für Text und Bedienelemente\n\nPRIVAT VON ANFANG AN\nKein Konto, kein Tracking, kein Netzwerkzugriff. Deine Farben bleiben auf deinem PC.\n\nChipDeck lebt im Infobereich der Taskleiste: Linksklick nimmt eine Farbe auf, Rechtsklick öffnet ChipDeck. Einmalkauf, kein Abo.",
+        "features": [
+          "Live-Lupe mit Pixelraster auf jedem Bildschirm",
+          "Je größer die Lupe, desto langsamer die Maus, damit jedes Pixel leicht zu treffen ist",
+          "Globales Tastenkürzel (Strg+Alt+Umschalt+C) aus jeder App",
+          "Kopieren als Hex, RGB, HSL, OKLCH, SwiftUI, Android, Flutter, .NET und mehr (17 Formate)",
+          "Farbverlauf, optional mit Farben, die du in anderen Apps kopierst",
+          "Paletten mit Drag & Drop, Export als JSON, CSS, SCSS, Tailwind oder GIMP-Palette",
+          "Farbeditor mit RGB, HSL, HSB und Deckkraft",
+          "WCAG-2-Kontrastprüfung (AA und AAA)",
+          "Heller und dunkler Modus",
+          "Kein Konto, kein Tracking, kein Netzwerkzugriff"
+        ],
+        "searchTerms": [
+          "farbpipette",
+          "farbwähler",
+          "color picker",
+          "hex farbe",
+          "farbpalette",
+          "kontrast",
+          "pipette"
+        ]
+      }
+    }
   }
 }
