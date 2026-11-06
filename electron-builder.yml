@@ -68,6 +68,8 @@ appx:
   publisher: CN=5F9A62F5-C953-4CA0-A263-EDA7D3419B3C
   publisherDisplayName: Mario Kernich
   displayName: 'ChipDeck: Color Picker'
+  # The Store rejects packages whose version has a revision (fourth number) other than 0.
+  setBuildNumber: false
   applicationId: ColorPicker
   backgroundColor: transparent
   showNameOnTiles: false
